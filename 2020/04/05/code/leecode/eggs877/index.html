@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="leecode链接  leecode官方题解链接  以下内容为对官方题解的个人理解 动态规划有两种 123dp[k][n] &#x3D;&#x3D;需要多少次操作	K个鸡蛋，n层楼具体在题解中很清晰了。  123dp[t][k] &#x3D;&#x3D; 最多能确定的楼层数，	K个鸡蛋，扔t次对于这种情况下的转移方程，一开始不能理解  这种情况下的转移方程为：$$f(T,K)&#x3D;1+f(T−1,K−">
+  <meta name="description" content="leecode链接  leecode官方题解链接  以下内容为对官方题解的个人理解">
 <meta property="og:type" content="article">
 <meta property="og:title" content=" 鸡蛋掉落问题">
 <meta property="og:url" content="http://yoursite.com/2020/04/05/code/leecode/eggs877/index.html">
 <meta property="og:site_name" content="白苏的GitHub个人主页">
-<meta property="og:description" content="leecode链接  leecode官方题解链接  以下内容为对官方题解的个人理解 动态规划有两种 123dp[k][n] &#x3D;&#x3D;需要多少次操作	K个鸡蛋，n层楼具体在题解中很清晰了。  123dp[t][k] &#x3D;&#x3D; 最多能确定的楼层数，	K个鸡蛋，扔t次对于这种情况下的转移方程，一开始不能理解  这种情况下的转移方程为：$$f(T,K)&#x3D;1+f(T−1,K−">
+<meta property="og:description" content="leecode链接  leecode官方题解链接  以下内容为对官方题解的个人理解">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-05T06:19:10.000Z">
-<meta property="article:modified_time" content="2020-04-05T06:21:16.969Z">
+<meta property="article:modified_time" content="2020-04-05T08:56:40.184Z">
 <meta property="article:author" content="fkY">
 <meta property="article:tag" content="code">
 <meta property="article:tag" content="leecode">
@@ -220,17 +220,10 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-05 14:19:10 / 修改时间：14:21:16" itemprop="dateCreated datePublished" datetime="2020-04-05T14:19:10+08:00">2020-04-05</time>
+              <time title="创建时间：2020-04-05 14:19:10 / 修改时间：16:56:40" itemprop="dateCreated datePublished" datetime="2020-04-05T14:19:10+08:00">2020-04-05</time>
             </span>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
 
         </div>
       </header>
@@ -246,6 +239,8 @@
 <a href="https://leetcode-cn.com/problems/super-egg-drop/solution/ji-dan-diao-luo-by-leetcode" title="" target="">leecode官方题解链接</a>
 
 <p><strong><em>以下内容为对官方题解的个人理解</em></strong></p>
+<a id="more"></a>
+
 <p>动态规划有两种</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dp[k][n] &#x3D;&#x3D;需要多少次操作</span><br><span class="line">	K个鸡蛋，n层楼</span><br><span class="line">具体在题解中很清晰了。</span><br></pre></td></tr></table></figure>
 
@@ -459,26 +454,6 @@
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
         
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
 
 
 
