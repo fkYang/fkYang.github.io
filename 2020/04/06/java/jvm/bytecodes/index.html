@@ -20,15 +20,22 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="白苏的GitHub个人主页">
-<meta property="og:url" content="http://yoursite.com/categories/Code/index.html">
+  <meta name="description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式  栈帧区域栈帧(Stack Frame)：用于支持虚拟机进行方法调用与方法执行的数据结构。运行时数据区虚拟机栈的栈元素。 栈帧内容：方法的局部变量表，操作数栈，动态链接，方法返回地址等信息。  栈帧的大小（局部变量表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字节码执行引擎">
+<meta property="og:url" content="http://yoursite.com/2020/04/06/java/jvm/bytecodes/index.html">
 <meta property="og:site_name" content="白苏的GitHub个人主页">
+<meta property="og:description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式  栈帧区域栈帧(Stack Frame)：用于支持虚拟机进行方法调用与方法执行的数据结构。运行时数据区虚拟机栈的栈元素。 栈帧内容：方法的局部变量表，操作数栈，动态链接，方法返回地址等信息。  栈帧的大小（局部变量表">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-06T07:21:56.159Z">
 <meta property="article:author" content="fkY">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jvm">
+<meta property="article:tag" content="bytecodes">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/categories/Code/">
+<link rel="canonical" href="http://yoursite.com/2020/04/06/java/jvm/bytecodes/">
 
 
 <script id="page-configurations">
@@ -36,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>分类: Code | 白苏的GitHub个人主页</title>
+  <title>字节码执行引擎 | 白苏的GitHub个人主页</title>
   
 
 
@@ -187,77 +194,159 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">Code
-          <small>分类</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/06/java/jvm/bytecodes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字节码执行引擎
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-06 00:00:00 / 修改时间：15:21:56" itemprop="dateCreated datePublished" datetime="2020-04-06T00:00:00+08:00">2020-04-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA-JVM-ByteCodes/" itemprop="url" rel="index"><span itemprop="name">-[JAVA,JVM , ByteCodes]</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>620</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-05T00:00:00+08:00"
-              content="2020-04-05">
-          04-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/05/code/leecode/eggs877/" itemprop="url">
-            <span itemprop="name"> 鸡蛋掉落问题</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-05T00:00:00+08:00"
-              content="2020-04-05">
-          04-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/04/05/code/leecode/leecodeDaily/" itemprop="url">
-            <span itemprop="name"> 日常leecode</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        <h1 id="虚拟机字节码执行引擎"><a href="#虚拟机字节码执行引擎" class="headerlink" title="虚拟机字节码执行引擎"></a>虚拟机字节码执行引擎</h1><p>物理机的执行引擎：建立在操作系统的层面上的</p>
+<p>虚拟机的执行引擎：软件自行实现的</p>
+<blockquote>
+<p>不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件<strong>直接</strong>支持的指令集格式</p>
+</blockquote>
+<h2 id="栈帧区域"><a href="#栈帧区域" class="headerlink" title="栈帧区域"></a>栈帧区域</h2><p>栈帧(Stack Frame)：用于支持虚拟机进行<strong>方法调用与方法执行</strong>的数据结构。运行时数据区<code>虚拟机栈</code>的栈元素。</p>
+<p>栈帧内容：方法的局部变量表，操作数栈，动态链接，方法返回地址等信息。</p>
+<blockquote>
+<p>栈帧的大小（局部变量表，操作数栈等的大小）存储在方法表的Code属性当中，编译成class文件后就固定了。</p>
+</blockquote>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>局部变量表Local Variables Table:变量值的存储空间，用于存放<strong>方法参数</strong>与方法内部定义的<strong>局部变量</strong>。</p>
+<blockquote>
+<p>Class文件中Code属性的<em>max_local</em>数据项就确定了该方法需要的局部变量表的<strong>最大值</strong>。</p>
+</blockquote>
+<p><em>存储单位</em>：变量槽Variable Slot</p>
+<blockquote>
+<p> 虚拟机规范未强制此项大小，一个变量槽的长度可以根据具体的事先有不同的长度。</p>
+</blockquote>
+<p><em>引用方式</em>：索引定位，从0开始，若某个变量占据两个槽，无法仅访问其中的一个。</p>
+<p>变量槽可重用：变量的作用域造成的。</p>
+<blockquote>
+<p>tips：在引用变量x出作用域，slot槽还未被其他的变量使用的时候，slot槽还存有x的引用，gc roots仍能找到其引用，x指向的对象不会被回收（即使这个x变量已经无用，可以被回收），最好在变量出作用域前，赋初值（<strong><em>主要是reference类型的变量</em></strong>。</p>
+<p>但由于概念模型与实际虚拟机的差别（比如:即时编译优化），可能并不会出现上面这种区别。</p>
+</blockquote>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\GC\" rel="bookmark">垃圾回收</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\类文件结构\" rel="bookmark">类文件结构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\内存区域与溢出异常\" rel="bookmark">内存区域与溢出异常</a></div>
+    </li>
+  </ul>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+              <a href="/tags/bytecodes/" rel="tag"># bytecodes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/05/hexoUsage/" rel="prev" title="hexo的基本用法">
+      <i class="fa fa-chevron-left"></i> hexo的基本用法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -304,6 +393,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机字节码执行引擎"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧区域"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -461,6 +551,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'c2a93517f063aeed7b41',
+      clientSecret: '976b549f23811c9bb65a211a2fc0916a4265ef75',
+      repo        : 'MyBlogComment',
+      owner       : 'fkYang',
+      admin       : ['fkYang'],
+      id          : '631bdb3219205580091fd8d3ea4ca2a6',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>
