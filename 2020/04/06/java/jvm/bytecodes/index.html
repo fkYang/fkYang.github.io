@@ -28,7 +28,7 @@
 <meta property="og:description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-06T09:22:13.785Z">
+<meta property="article:modified_time" content="2020-04-08T12:12:11.382Z">
 <meta property="article:author" content="fkY">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="jvm">
@@ -223,10 +223,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-04-06 00:00:00 / 修改时间：17:22:13" itemprop="dateCreated datePublished" datetime="2020-04-06T00:00:00+08:00">2020-04-06</time>
+              <time title="创建时间：2020-04-06 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-06T00:00:00+08:00">2020-04-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-08 20:12:11" itemprop="dateModified" datetime="2020-04-08T20:12:11+08:00">2020-04-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -250,14 +256,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>620</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -295,6 +301,102 @@
 <p>tips：在引用变量x出作用域，slot槽还未被其他的变量使用的时候，slot槽还存有x的引用，gc roots仍能找到其引用，x指向的对象不会被回收（即使这个x变量已经无用，可以被回收），最好在变量出作用域前，赋初值（<strong><em>主要是reference类型的变量</em></strong>。</p>
 <p>但由于概念模型与实际虚拟机的差别（比如:即时编译优化），可能并不会出现上面这种区别。</p>
 </blockquote>
+<h3 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h3><p>操作数栈Operand Stack: 操作栈，后入先出的 栈。</p>
+<blockquote>
+<p>操作数栈的最大深度也是在编译的时候被写入到Code属性的max_stacks中。</p>
+</blockquote>
+<p>栈的内容：任意类型的java数据类型。32位的数据占据栈容量1；64位的容量为2.</p>
+<p>程序运行开始，操作数栈为空，根据字节码指令进行相应的入栈出栈操作。</p>
+<blockquote>
+<p>操作数栈的数据类型与字节码指令的序列严格匹配，</p>
+<ul>
+<li>编译器保证</li>
+<li>类校验阶段验证(验证中的字节码验证)</li>
+</ul>
+</blockquote>
+<p>栈帧之间可能有数据共享。</p>
+<h3 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h3><p>在运行时间，将字节码的方法调用指令的符号引用 转化为直接引用。</p>
+<blockquote>
+<ul>
+<li><p>静态解析：类加载阶段，符号引用—&gt;直接引用</p>
+</li>
+<li><p>动态连接：每一次运行期间转化为直接引用</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h3><p>方法开始执行后，退出方法的两个途径</p>
+<ol>
+<li>正常调用完成：遇到了返回的字节码指令，返回到上层调用</li>
+<li>异常调用完成：遇上了妥善处理的异常，不会返回给上层任何返回值的。</li>
+</ol>
+<h3 id="附加信息"><a href="#附加信息" class="headerlink" title="附加信息"></a>附加信息</h3><p>一般把动态连接，方法返回地址，附加信息统称一类栈帧 信息</p>
+<h2 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h2><p>方法调用：确定被调用的方法的版本（确定是哪一个方法）</p>
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><ul>
+<li>类加载的<strong>解析</strong>：符号引用–&gt;直接引用 ； 此方法调用在运行期间不可改变</li>
+</ul>
+<blockquote>
+<p>编译期可知，运行期不可变： 静态方法（与类型直接相连），私有方法（外部不可访问）。</p>
+<p>这两类方法不可通过<strong>继承或其他方式</strong> <em>重写</em>其他版本，能够在类加载阶段进行解析</p>
+<ul>
+<li>非虚方法：静态，私有，实例构造器，父类方法+ final修饰的方法</li>
+<li>虚方法：其他方法。</li>
+</ul>
+</blockquote>
+<p>方法调用的字节码指令：invoke </p>
+<blockquote>
+<ul>
+<li>static: 静态方法</li>
+<li>special: 实例构造器<init> ，私有，父类中的方法。</li>
+<li>virtual</li>
+<li>interface:</li>
+<li>dynamic:</li>
+</ul>
+</blockquote>
+<p>static与special调用的方法，在类加载阶段可以唯一确定调用的版本</p>
+<h3 id="分派Dispatch"><a href="#分派Dispatch" class="headerlink" title="分派Dispatch"></a>分派Dispatch</h3><ul>
+<li>静态分派： 依据==静态类型==决定方法执行版本的分派动作。<em>编译阶段</em></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Human man = <span class="keyword">new</span> Man();</span><br><span class="line">Human 为静态类型，编译期可知；Man为实际类型，运行期可知</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong><em>重载(典型的静态分派)</em></strong>：虚拟机/编译器根据传入变量的静态类型进行作为判断依据。</p>
+<p>重载：确定的是相对最合适的，不是唯一的</p>
+<p>按照与参数的关系进行匹配，优先级从高到低，与参数的继承（+实现的接口）的关系一致（从底层向父类找）</p>
+</blockquote>
+<ul>
+<li>动态分派：运行期根据==实际类型==确定方法执行版本的分派过程</li>
+</ul>
+<blockquote>
+<p><strong><em>重写</em></strong>：根据<strong><em>方法接收者的</em></strong>实际类型选择方法版本</p>
+<p>invokevirtual:</p>
+<ol>
+<li>先找操作数栈顶指向对象的<strong><em>实际类型</em></strong>C</li>
+<li>在类型C找到相对应的方法，若有访问权限，返回方法的直接引用，否则，java.lang/IllegalAccessError异常</li>
+<li>类型C中找不到，按照继承关系从下往上依次对父类进行搜索与验证</li>
+<li>仍然找不到，java.lang.AbstratMethodError异常</li>
+</ol>
+</blockquote>
+<ul>
+<li>单分派与多分派</li>
+</ul>
+<p>方法的<strong>宗量</strong>：方法的接收者与方法的参数。</p>
+<blockquote>
+<ul>
+<li>单分派：根据一个总量对目标方法进行选择</li>
+<li>多分派：根据多于一个总量对目标方法进行选择</li>
+</ul>
+<p>静态多分派：静态类型+方法参数</p>
+<p>动态单分派：方法参数类型已经确定，方法的接收者尚未确定</p>
+</blockquote>
+<ul>
+<li>虚拟机动态分派的实现</li>
+</ul>
+<p>动态分派，运行时搜索类型的方法元数据来找到合适的目标，反复搜索类型元数据—耗时</p>
+<p><strong><em>虚方法表</em></strong>：在类型的方法表中建立，使用虚方法表索引代替元数据查找以提高性能。</p>
+<blockquote>
+<p>虚方法表中存储各个方法的<strong>实际入口地址</strong>（方法对应的字节码，存储在各个类的方法区中），</p>
+<p>虚方法表一般在类加载的连接–准备后，在准备的类的变量初始值后，初始化虚方法表。</p>
+</blockquote>
 
     </div>
 
@@ -305,9 +407,6 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\GC\" rel="bookmark">垃圾回收</a></div>
     </li>
     <li class="popular-posts-item">
@@ -315,6 +414,9 @@
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\类文件结构\" rel="bookmark">类文件结构</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
     </li>
   </ul>
 
@@ -398,7 +500,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机字节码执行引擎"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧区域"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机字节码执行引擎"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧区域"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作数栈"><span class="nav-number">1.1.2.</span> <span class="nav-text">操作数栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态连接"><span class="nav-number">1.1.3.</span> <span class="nav-text">动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法返回地址"><span class="nav-number">1.1.4.</span> <span class="nav-text">方法返回地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附加信息"><span class="nav-number">1.1.5.</span> <span class="nav-text">附加信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法调用"><span class="nav-number">1.2.</span> <span class="nav-text">方法调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">1.2.1.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分派Dispatch"><span class="nav-number">1.2.2.</span> <span class="nav-text">分派Dispatch</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -414,7 +516,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -427,7 +529,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -471,12 +573,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">15k</span>
+    <span title="站点总字数">18k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">14 分钟</span>
+    <span title="站点阅读时长">16 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
