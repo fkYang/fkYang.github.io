@@ -193,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/09/java/tools/jvmtools/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/20/java/sourceAnalyze/loadClassAndForname/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -207,7 +207,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/04/09/java/tools/jvmtools/" class="post-title-link" itemprop="url">VisualVM</a>
+            <a href="/2020/04/20/java/sourceAnalyze/loadClassAndForname/" class="post-title-link" itemprop="url">class.forname 和load.class</a>
         </h2>
 
         <div class="post-meta">
@@ -218,7 +218,20 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-09 20:25:56 / 修改时间：20:29:30" itemprop="dateCreated datePublished" datetime="2020-04-09T20:25:56+08:00">2020-04-09</time>
+              <time title="创建时间：2020-04-20 11:11:37 / 修改时间：12:31:38" itemprop="dateCreated datePublished" datetime="2020-04-20T11:11:37+08:00">2020-04-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/SOURCECODE/" itemprop="url" rel="index"><span itemprop="name">SOURCECODE</span></a>
+                </span>
             </span>
 
           <br>
@@ -227,7 +240,96 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>49</span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Class.forname()与ClassLoader.loadClass(className)分析</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/20/java/sourceAnalyze/loadClassAndForname/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/20/tools-list/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/20/tools-list/" class="post-title-link" itemprop="url">tools list</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-20 10:34:45 / 修改时间：10:50:14" itemprop="dateCreated datePublished" datetime="2020-04-20T10:34:45+08:00">2020-04-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Tools/" itemprop="url" rel="index"><span itemprop="name">Tools</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>280</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -246,8 +348,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="JVM用到的工具"><a href="#JVM用到的工具" class="headerlink" title="JVM用到的工具"></a>JVM用到的工具</h1><p>本机jdk\bin目录下找不到VisualVM，就去官网下载了</p>
-<p><a href="https://visualvm.github.io/" target="_blank" rel="noopener">VisualHome</a></p>
+          <h1 id="java-Tools"><a href="#java-Tools" class="headerlink" title="java Tools"></a>java Tools</h1><h2 id="jclasslab-Bytecode-viewer：一个看字节码的工具"><a href="#jclasslab-Bytecode-viewer：一个看字节码的工具" class="headerlink" title="jclasslab Bytecode viewer：一个看字节码的工具"></a>jclasslab Bytecode viewer：一个看字节码的工具</h2><h2 id="BinaryViewer：查看二进制文件的工具"><a href="#BinaryViewer：查看二进制文件的工具" class="headerlink" title="BinaryViewer：查看二进制文件的工具"></a>BinaryViewer：查看二进制文件的工具</h2><h2 id="JOL：java-object-layout：查看对象的内存布局的工具"><a href="#JOL：java-object-layout：查看对象的内存布局的工具" class="headerlink" title="JOL：java object layout：查看对象的内存布局的工具"></a>JOL：java object layout：查看对象的内存布局的工具</h2><p><a href="https://github.com/zhongmingmao/java_object_layout/tree/master/jol-sample" target="_blank" rel="noopener">maven环境下的pox.xml配置文件</a></p>
+<h2 id="jitWatch：查看汇编代码"><a href="#jitWatch：查看汇编代码" class="headerlink" title="jitWatch：查看汇编代码"></a>jitWatch：查看汇编代码</h2><p>JIT目录下（d，ubuntu，jitwatch）（zip解压目录下执行）</p>
+<p>mvn clean compile exec:java（需要配置maven）</p>
+<p><a href="https://blog.csdn.net/hengyunabc/article/details/26898657" target="_blank" rel="noopener">安装教程</a></p>
+<p><a href="https://github.com/AdoptOpenJDK/jitwatch" target="_blank" rel="noopener">github主页</a></p>
+<h2 id="arthas：是Alibaba开源的Java诊断工具"><a href="#arthas：是Alibaba开源的Java诊断工具" class="headerlink" title="arthas：是Alibaba开源的Java诊断工具"></a>arthas：是Alibaba开源的Java诊断工具</h2><p><a href="https://github.com/alibaba/arthas" target="_blank" rel="noopener">github主页</a></p>
+<p>目录下执行：java -jar arthas-boot.jar</p>
 
       
     </div>
@@ -500,7 +607,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-13 16:22:48" itemprop="dateModified" datetime="2020-04-13T16:22:48+08:00">2020-04-13</time>
+                <time title="修改时间：2020-04-17 12:25:13" itemprop="dateModified" datetime="2020-04-17T12:25:13+08:00">2020-04-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -545,87 +652,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/04/06/java/jvm/bytecodes/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/05/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="fkY">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="白苏的GitHub个人主页">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/05/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-04-05 13:41:13 / 修改时间：16:58:38" itemprop="dateCreated datePublished" datetime="2020-04-05T13:41:13+08:00">2020-04-05</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>357</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/05/hello-world/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -716,20 +742,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -773,12 +799,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">23k</span>
+    <span title="站点总字数">36k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">21 分钟</span>
+    <span title="站点阅读时长">33 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
