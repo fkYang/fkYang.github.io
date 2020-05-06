@@ -28,7 +28,7 @@
 <meta property="og:description" content="chapter 2 java内存区域与内存溢出异常2.2 运行时数据区域">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-05T10:40:59.716Z">
+<meta property="article:modified_time" content="2020-05-04T00:43:45.183Z">
 <meta property="article:author" content="fkY">
 <meta property="article:tag" content="jvm">
 <meta property="article:tag" content="java">
@@ -218,15 +218,22 @@
         </h1>
 
         <div class="post-meta">
+                    
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-04-05 00:00:00 / 修改时间：18:40:59" itemprop="dateCreated datePublished" datetime="2020-04-05T00:00:00+08:00">2020-04-05</time>
+              <time title="创建时间：2020-04-05 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-05T00:00:00+08:00">2020-04-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-04 08:43:45" itemprop="dateModified" datetime="2020-05-04T08:43:45+08:00">2020-05-04</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -258,7 +265,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.9k</span>
+              <span>3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -354,7 +361,7 @@
 <h3 id="方法区：线程共享，元空间"><a href="#方法区：线程共享，元空间" class="headerlink" title="方法区：线程共享，元空间"></a>方法区：线程共享，元空间</h3><ol>
 <li><p>存储虚拟机<strong><em>加载</em></strong>的类型信息，常量，静态变量，即时编译器编译后的代码缓存等数据。</p>
 <blockquote>
-<p>jdk 8 之前，永久代概念，实现。字符串常量池+静态变量 再jdk7移到堆中</p>
+<p>jdk 8 之前，永久代概念，实现。字符串常量池+静态变量 在jdk7移到堆中</p>
 </blockquote>
 </li>
 </ol>
@@ -381,7 +388,7 @@
 </tr>
 <tr>
 <td>运行时常量池</td>
-<td>方法区的一部分，所有线程共享。虚拟机加载Class后把常量池中的数据放入到运行时常量池。</td>
+<td>方法区的一部分，所有线程共享。虚拟机加载Class后把常量池中的数据（常量池表）放入到运行时常量池。</td>
 </tr>
 </tbody></table>
 <ol>
@@ -396,16 +403,9 @@
 </ol>
 </blockquote>
 <h3 id="运行时常量池-：-方法区的一部分"><a href="#运行时常量池-：-方法区的一部分" class="headerlink" title="运行时常量池 ： 方法区的一部分"></a>运行时常量池 ： 方法区的一部分</h3><p><em>class文件</em>：类版本，字段，方法，接口等描述信息+ 常量池表。</p>
-<blockquote>
-<p>常量池表：存放编译器生成的<em>字面量</em>与<em>符号引用</em>，类加载后，存放至方法区的运行时常量池。</p>
-<ol>
-<li><p>字面量：文本字符串、声明为final的常量值等；</p>
-<ol start="2">
-<li>符号引用：类和接口的完全限定名（Fully Qualified Name）、字段的名称和描述符（Descriptor）、方法的名称和描述符</li>
-</ol>
-</li>
-</ol>
-</blockquote>
+<p>通过 String.intern()方法不断往运行时常量池里加字符串变量，最后ava.lang.OutOfMemoryError: Java heap space。证明java常量池字符串对象存储位置是堆空间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">           String temp = String.valueOf(i).intern();</span><br><span class="line">           list.add(temp);</span><br><span class="line">       &#125;</span><br><span class="line">  <span class="comment">//     -Xms12M -Xmx12M,虚拟机运行参数，设置堆空间12m</span></span><br></pre></td></tr></table></figure>
+
 <p>   <strong><em>动态性</em></strong>：编译期可以产生常量，运行时也可以把新的常量放入池中。</p>
 <blockquote>
 <p>String 的intern()，方法，若常量池中不存在该字符串，则加入常量池并返回其引用，若存在，则返回常量池的该字符串对象的引用</p>
@@ -419,27 +419,37 @@
 <p>针对HotSpot虚拟机，java堆</p>
 </blockquote>
 <h3 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h3><ol>
-<li><p>检测类是否加载</p>
+<li><p>检测<strong>类是否加载</strong></p>
 </li>
-<li><p>虚拟机为新生对象分配内存，内存大小在加载完便可以确定。s</p>
-<blockquote>
+<li><p>虚拟机为新生对象<strong>分配内存</strong>，内存大小在加载完便可以确定。</p>
 <p>两种分配方法基于java堆是否完整：</p>
-<p>| name     | content                                                      |</p>
-</blockquote>
-<blockquote>
-<p>| ——– | ———————————————————— |</p>
-<pre><code>&gt; | 指针碰撞 | 堆完整/连续内存，分为使用过的，未使用的。&lt;br /&gt;分配内存表现为指针的移动&lt;br /&gt;适用收集器：压缩整理过程的收集器 |</code></pre><p>| 空闲列表 | 堆内存不完整，通过维护列表记录内存的使用情况。<br />分配内存：找一个足够大的空闲区，更新列表<br />适用收集器：清除算法的收集器 |</p>
-</blockquote>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>指针碰撞</td>
+<td>堆完整/连续内存，分为使用过的，未使用的。<br />分配内存表现为指针的移动<br />适用收集器：压缩整理过程的收集器</td>
+</tr>
+<tr>
+<td>空闲列表</td>
+<td>堆内存不完整，通过维护列表记录内存的使用情况。<br />分配内存：找一个足够大的空闲区，更新列表<br />适用收集器：清除算法的收集器</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
 <ol start="3">
-<li><p>将分配的内存空间（除了对象头）初始化为零值。</p>
+<li><p>将分配的内存空间（除了对象头）<strong>初始化为零值</strong>。</p>
 </li>
-<li><p>设置对象头相关信息。</p>
+<li><p><strong>设置对象头</strong>相关信息。</p>
 </li>
-<li><p>构造函数，class文件的<init>()方法</p>
-</li>
-</ol>
+<li><p>执行构造函数，class文件的<strong><init></strong>()方法</p>
 </li>
 </ol>
+<p>​     </p>
 <h4 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h4><p>三部分：对象头Header，实例数据Instance Data，对齐填充Padding</p>
 <p>对象头：包含两类信息。</p>
 <blockquote>
@@ -540,9 +550,6 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\GC\" rel="bookmark">垃圾回收</a></div>
-    </li>
-    <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2020\04\06\java\jvm\运行时区域与调用\" rel="bookmark">字节码执行引擎</a></div>
     </li>
     <li class="popular-posts-item">
@@ -571,8 +578,8 @@
       <i class="fa fa-chevron-left"></i>  日常leecode
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/GC/" rel="next" title="垃圾回收">
-      垃圾回收 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/05/java/jvm/ClassLoader/" rel="next" title="类加载机制">
+      类加载机制 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -649,20 +656,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -706,12 +713,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">48k</span>
+    <span title="站点总字数">74k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">44 分钟</span>
+    <span title="站点阅读时长">1:07</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>

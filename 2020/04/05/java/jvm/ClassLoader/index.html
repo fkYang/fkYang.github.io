@@ -29,8 +29,10 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/images/java/JVM/ClassLoader.jpg">
 <meta property="og:image" content="http://yoursite.com/images/java/JVM/%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD/jdk9%E4%B9%8B%E5%90%8E%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%99%A8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8.png">
 <meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-21T09:11:20.788Z">
+<meta property="article:modified_time" content="2020-05-04T02:45:42.930Z">
 <meta property="article:author" content="fkY">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
@@ -219,6 +221,7 @@
         </h1>
 
         <div class="post-meta">
+                    
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
@@ -232,7 +235,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-21 17:11:20" itemprop="dateModified" datetime="2020-04-21T17:11:20+08:00">2020-04-21</time>
+                <time title="修改时间：2020-05-04 10:45:42" itemprop="dateModified" datetime="2020-05-04T10:45:42+08:00">2020-05-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,14 +264,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.1k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -288,13 +291,22 @@
 </blockquote>
 <a id="more"></a>
 
-<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><p>加载，验证，准备，解析，初始化。</p>
+<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><blockquote>
+<p>初始化类的时候，应该先初始化父类</p>
+</blockquote>
+<p>加载，验证，准备，解析，初始化。</p>
 <ul>
-<li>加载：获取该<strong><em>类的二进制字节流</em></strong>。在堆内存生成class对象</li>
+<li>加载：获取该<strong><em>类的二进制字节流</em></strong>。在方法区中存储数据，在堆内存生成class对象</li>
 <li>验证：确保Class文件中的字节流包含的信息符合约束要求</li>
-<li>准备：为类定义的变量(<em>static 修饰的静态变量</em>)分配内存并设定<strong><em>类变量初始值</em></strong>的阶段。</li>
+<li>准备：为类定义的变量(<em>static 修饰的静态变量</em>)<strong>分配内存</strong>并设定<strong><em>类变量初始值</em></strong>的阶段。<ul>
+<li><strong>final static</strong>类型的变量，在此阶段初始化，从常量池中取数据</li>
+</ul>
+</li>
 <li>解析：把常量池中的符号引用替换为直接引用的过程。</li>
-<li>初始化：<clinit>()方法</li>
+<li>初始化：<clinit>()方法<ul>
+<li><strong>static修饰的变量与块的顺序执行过程</strong></li>
+</ul>
+</li>
 </ul>
 <h2 id="lt-clinit-gt-（）方法分析"><a href="#lt-clinit-gt-（）方法分析" class="headerlink" title="&lt;clinit&gt;（）方法分析"></a>&lt;clinit&gt;（）方法分析</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">parent</span></span>&#123;</span><br><span class="line">	<span class="keyword">static</span> &#123; a = <span class="number">5</span>;&#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">final</span> <span class="keyword">int</span> b = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">private</span>  <span class="keyword">static</span>  <span class="keyword">int</span> c=initc();</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        a = <span class="number">500</span>;</span><br><span class="line">        System.out.println(<span class="string">"1.父类静态代码块：赋值b成功"</span> + b);</span><br><span class="line">     <span class="comment">//  System.out.println("1.父类静态代码块：a的值"+a);</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">int</span> a = <span class="number">100</span>;</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">static</span>  <span class="keyword">int</span> <span class="title">initc</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"3.父类成员变量赋值：---&gt; c的值"</span>+c);</span><br><span class="line">        c=<span class="number">12</span>;</span><br><span class="line">        System.out.println(<span class="string">"3.父类成员变量赋值：---&gt; c的值"</span>+c);</span><br><span class="line">        <span class="keyword">return</span> c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">parent</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"4.父类构造方式开始执行---&gt; a:"</span>+a+<span class="string">",b:"</span>+b);</span><br><span class="line">        System.out.println(<span class="string">"4.父类构造方式开始执行---&gt; c:"</span>+c);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">son</span> <span class="keyword">extends</span> <span class="title">parent</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">int</span> sa=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> sb;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> sfinal = <span class="number">56</span>;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        sb=<span class="number">1</span>;</span><br><span class="line">        System.out.println(<span class="string">"2.子类静态代码块：赋值sb成功"</span>);</span><br><span class="line">        System.out.println(<span class="string">"2.子类静态代码块：sa的值"</span>+sa);</span><br><span class="line">       <span class="comment">// System.out.println("5.子类成员变量赋值---&gt;：sc的值"+sc);</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> sonObjectFinal = <span class="number">45</span>;</span><br><span class="line">   <span class="keyword">private</span>   <span class="keyword">int</span> sc=initc2();</span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">initc2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"5.子类成员变量赋值---&gt;：sc的值"</span>+sc);</span><br><span class="line">        <span class="keyword">this</span>.sc=<span class="number">12</span>;</span><br><span class="line">        <span class="keyword">return</span> sc;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">son</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"6.子类构造方式开始执行---&gt; sa:"</span>+sa+<span class="string">",sb:"</span>+sb);</span><br><span class="line">        System.out.println(<span class="string">"6.子类构造方式开始执行---&gt; sc:"</span>+sc);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">son</span><span class="params">( String name)</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">this</span>();</span><br><span class="line">    	System.out.println(name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -303,34 +315,48 @@
 <p>从中可以看到clinit函数执行的代码就是son函数<strong>static修饰的变量与块的顺序执行过程</strong>，但注意，<strong>final static</strong> 修饰的变量在这里并没有字节码进行赋值，是因为在编译阶段，final类型变量就已经写入常量池中，final static在准备阶段为类变量准备空间的时候就已经赋值完成了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> #8 = Utf8               sfinal</span><br><span class="line"> #9 = Utf8               ConstantValue</span><br><span class="line">#10 = Integer            56</span><br><span class="line">     <span class="comment">// public static final int sfinal = 56;</span></span><br><span class="line">#11 = Utf8               sonObjectFinal</span><br><span class="line">#12 = Integer            45</span><br><span class="line">     <span class="comment">//  public final int sonObjectFinal = 45;</span></span><br></pre></td></tr></table></figure>
 
-
-
+<h2 id="多线程时类加载的方案"><a href="#多线程时类加载的方案" class="headerlink" title="多线程时类加载的方案"></a>多线程时类加载的方案</h2><p>对于<strong>每一个类/接口</strong>，都有一个<strong>唯一的初始化锁</strong>与之对应。</p>
+<ol>
+<li>通过在Class对象上同步（获取对应的初始化锁），来控制初始化。获取锁的线程会一直等待，直到当前线程获得了锁。</li>
+<li>当前线程A获得了锁，由于*<em>state *</em>= noInitialization，设置state = initializing 执行初始化的过程，线程B等待初始化锁</li>
+<li>线程A完成类的初始化（类加载生成class对象），设置状态state=initialized，唤醒等待锁的线程</li>
+<li>读取state=initialized，结束初始化。</li>
+<li>其他线程初始化线程，获得初始化锁，读取state=initialized，结束初始化。</li>
+</ol>
 <h1 id="对象创建的过程"><a href="#对象创建的过程" class="headerlink" title="对象创建的过程"></a>对象创建的过程</h1><ul>
 <li>检查类是否加载</li>
 <li>内存分配，设置对象头，赋予初值</li>
-<li>执行构造函数&lt;init&gt;函数</li>
+<li>执行构造函数&lt;init&gt;函数<ul>
+<li>先调用父类的init函数，</li>
+<li>然后是类实例变量的初始化（按照出现的顺序），</li>
+<li>最后是new对象时采取的构造函数的代码。几个构造函数就有几个init方法</li>
+</ul>
+</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassNewDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">	        son sons=<span class="keyword">new</span> son(<span class="string">"hello"</span>);</span><br><span class="line">	   <span class="comment">// 	String className = "tempTest.ClassLoader.son";</span></span><br><span class="line">	   <span class="comment">// 	ClassLoader.getSystemClassLoader().loadClass(className);</span></span><br><span class="line">	    		<span class="comment">//loadclass，只加载（读取class文件到内存生成class对象），不进行初始化</span></span><br><span class="line">	    <span class="comment">//	Class.forName(className);</span></span><br><span class="line">         			<span class="comment">//类加载，执行到类的初始化</span></span><br><span class="line">	    	<span class="comment">//System.out.println(son.a);</span></span><br><span class="line">            	<span class="comment">//类的static变量，只加载，初始化 类静态变量所在的类</span></span><br><span class="line">         <span class="comment">//	System.out.println(son.sfinal);</span></span><br><span class="line">	    <span class="comment">//	System.out.println(son.sa);</span></span><br><span class="line">           		 <span class="comment">//读取类的final static 类型变量，不进行类加载与初始化</span></span><br><span class="line">	  <span class="comment">//  	son[] arr = new son[10];</span></span><br><span class="line">            		<span class="comment">//数组，不触发类加载</span></span><br><span class="line">	    &#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>son sons = new son(“hello”)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">对应的字节码文件</span><br><span class="line">0 new #19 &lt;tempTest/ClassLoader/son&gt;</span><br><span class="line">    <span class="comment">//Create new object  the instance variables of the new object are initialized to their default initial values (§2.3, §2.4).</span></span><br><span class="line">    <span class="comment">//分配内存，赋初值</span></span><br><span class="line"> <span class="number">3</span> dup</span><br><span class="line">    <span class="comment">//Duplicate the top operand stack value，</span></span><br><span class="line"> 4 ldc #21 &lt;hello&gt;</span><br><span class="line">    <span class="comment">//Push item from run-time constant pool，类的实例final变量，从常量池获取string字符串</span></span><br><span class="line"> 6 invokespecial #23 &lt;tempTest/ClassLoader/son.&lt;init&gt;&gt;</span><br><span class="line">    <span class="comment">//	Invoke instance method; special handling for superclass, private, and instance initialization method invocations</span></span><br><span class="line">    <span class="comment">//调用son的init函数来进行初始化</span></span><br><span class="line"> <span class="number">9</span> astore_1</span><br><span class="line">    <span class="comment">//Store reference into local variable， 把引用 赋值本地变量表中下标为1的变量，son</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">11</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">           <span class="number">10</span>       <span class="number">1</span>     <span class="number">1</span>  sons   LtempTest/ClassLoader/son;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>分配空间，2.实例final，3.init函数初始化，4.赋值引用。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">对应的字节码文件</span><br><span class="line">0 new #19 &lt;tempTest/ClassLoader/son&gt;</span><br><span class="line">    <span class="comment">//Create new object  the instance variables of the new object are initialized to their default initial values (§2.3, §2.4).</span></span><br><span class="line">    <span class="comment">//1. 分配内存，赋初值</span></span><br><span class="line"> <span class="number">3</span> dup</span><br><span class="line">    <span class="comment">//Duplicate the top operand stack value，</span></span><br><span class="line"> 4 ldc #21 &lt;hello&gt;</span><br><span class="line">    <span class="comment">//Push item from run-time constant pool，</span></span><br><span class="line">    <span class="comment">//2.类的实例final变量，从常量池获取string字符串</span></span><br><span class="line"> 6 invokespecial #23 &lt;tempTest/ClassLoader/son.&lt;init&gt;&gt;</span><br><span class="line">    <span class="comment">//	Invoke instance method; special handling for superclass, private, and instance initialization method invocations</span></span><br><span class="line">    <span class="comment">//3.调用son的init函数来进行初始化</span></span><br><span class="line"> <span class="number">9</span> astore_1</span><br><span class="line">    <span class="comment">//Store reference into local variable，</span></span><br><span class="line">    <span class="comment">//4. 赋值引用， 把引用 赋值本地变量表中下标为1的变量，son，</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">11</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">           <span class="number">10</span>       <span class="number">1</span>     <span class="number">1</span>  sons   LtempTest/ClassLoader/son;</span><br></pre></td></tr></table></figure>
 
 <h2 id="init函数分析"><a href="#init函数分析" class="headerlink" title="init函数分析"></a>init函数分析</h2><p>从字节码文件可以看出，init方法，</p>
 <ul>
 <li>先调用父类的init函数，</li>
 <li>然后是类实例变量的初始化（按照出现的顺序），</li>
-<li>最后是调用的构造函数的代码。</li>
+<li>最后是new对象时采取的构造函数的代码。几个构造函数就有几个init方法</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">String参数对应的init函数 </span><br><span class="line"><span class="number">0</span> aload_0</span><br><span class="line"> <span class="comment">//Load reference from local variable ，this指针</span></span><br><span class="line"> 1 invokespecial #75 &lt;tempTest/ClassLoader/son.&lt;init&gt;&gt;</span><br><span class="line">     <span class="comment">//调用函数，this（）；</span></span><br><span class="line"> 4 getstatic #21 &lt;java/lang/System.out&gt;</span><br><span class="line">     <span class="comment">//Get static field from class </span></span><br><span class="line"> <span class="number">7</span> aload_1</span><br><span class="line"> 8 invokevirtual #29 &lt;java/io/PrintStream.println&gt;</span><br><span class="line"><span class="number">11</span> <span class="keyword">return</span></span><br><span class="line">     </span><br><span class="line">     </span><br><span class="line">     </span><br><span class="line"> LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            <span class="number">0</span>      <span class="number">12</span>     <span class="number">0</span>  <span class="keyword">this</span>   LtempTest/ClassLoader/son;</span><br><span class="line">            <span class="number">0</span>      <span class="number">12</span>     <span class="number">1</span>  name   Ljava/lang/String;</span><br><span class="line"></span><br><span class="line">空构造函数对应的init函数</span><br><span class="line"> <span class="number">0</span> aload_0</span><br><span class="line"> 1 invokespecial #60 &lt;tempTest/ClassLoader/parent.&lt;init&gt;&gt;</span><br><span class="line">    <span class="comment">//调用父类的初始化函数</span></span><br><span class="line"> <span class="number">4</span> aload_0</span><br><span class="line"> <span class="number">5</span> bipush <span class="number">45</span></span><br><span class="line"> 7 putfield #62 &lt;tempTest/ClassLoader/son.sonObjectFinal&gt;</span><br><span class="line"><span class="number">10</span> aload_0</span><br><span class="line"><span class="number">11</span> aload_0</span><br><span class="line">12 invokevirtual #64 &lt;tempTest/ClassLoader/son.initc2&gt;</span><br><span class="line">15 putfield #56 &lt;tempTest/ClassLoader/son.sc&gt;</span><br><span class="line">    <span class="comment">//类的实例变量初始化完毕</span></span><br><span class="line">18 getstatic #21 &lt;java/lang/System.out&gt;</span><br><span class="line">21 new #35 &lt;java/lang/StringBuilder&gt;</span><br><span class="line"><span class="number">24</span> dup</span><br><span class="line">25 ldc #66 &lt;6.子类构造方式开始执行---&gt; sa:&gt;</span><br><span class="line">    </span><br><span class="line">27 invokespecial #39 &lt;java/lang/StringBuilder.&lt;init&gt;&gt;</span><br><span class="line">    </span><br><span class="line">30 getstatic #17 &lt;tempTest/ClassLoader/son.sa&gt;</span><br><span class="line">    ---</span><br><span class="line">56 new #35 &lt;java/lang/StringBuilder&gt;</span><br><span class="line"><span class="number">59</span> dup</span><br><span class="line">60 ldc #73 &lt;6.子类构造方式开始执行---&gt; sc:&gt;</span><br><span class="line">62 invokespecial #39 &lt;java/lang/StringBuilder.&lt;init&gt;&gt;</span><br><span class="line"><span class="number">65</span> aload_0</span><br><span class="line">	---</span><br><span class="line"><span class="number">78</span> <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
 
 
 
-<h2 id="对象创建的一些要点"><a href="#对象创建的一些要点" class="headerlink" title="对象创建的一些要点"></a>对象创建的一些要点</h2><ul>
+<h1 id="对象创建的一些要点"><a href="#对象创建的一些要点" class="headerlink" title="对象创建的一些要点"></a>对象创建的一些要点</h1><ul>
 <li>数组，不触发类加载</li>
-<li>类的static变量，只加载，初始化 类静态变量所在的类</li>
-<li>读取类的final static 类型变量，不进行类加载与初始化</li>
+<li><strong>类的static变量</strong>，只加载，初始化类静态变量<strong>所在的类</strong></li>
+<li>读取<strong>类的final static 类型变量</strong>，不进行类加载与初始化</li>
 </ul>
-<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><p>对象大小：一定8字节的整数倍</p>
+<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>对象大小：一定8字节的整数倍</p>
 <ol>
 <li><p>对象头：</p>
 <ol>
@@ -359,6 +385,41 @@
 
 </li>
 </ol>
+<h3 id="指针压缩"><a href="#指针压缩" class="headerlink" title="指针压缩"></a>指针压缩</h3><pre><code>-XX:+UseComressedClassPointers：压缩类指针
+
+-XX:+UseCompressedOops：压缩对象指针</code></pre><p>内存最小单元，1字节，8位。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>数量</th>
+<th>内存最小单元</th>
+<th>单位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>64位</td>
+<td>$2^{64}$</td>
+<td>一个字节，8位</td>
+<td>B</td>
+</tr>
+<tr>
+<td>32位（开启压缩指针）</td>
+<td>$2^{32}$</td>
+<td>八个字节，</td>
+<td>8B</td>
+</tr>
+</tbody></table>
+<p>开启压缩指针的32位，内存最小单位8字节，$2^{32}*8B = 32GB$</p>
+<blockquote>
+<p>内存最小单位8字节：每八个字节（一个64位的内存地址）记录一次引用</p>
+</blockquote>
+<p>指针压缩后的寻址范围：4GB-32GB</p>
+<ul>
+<li>4GB：$2^{32}*1B = 4GB$ ，32位，4个字节，单位1B</li>
+<li>32GB：$2^{32}*8B = 32GB$，32位，4个1字节，单位8B</li>
+</ul>
+<p>64位，内存最小单元为一字节，数量：$2^{64}$，单位：B，在0-32GB的内存中，使用了35位，$2^{35} = 2^5<em>2^{10</em>3}$</p>
 <h1 id="类加载的时机"><a href="#类加载的时机" class="headerlink" title="类加载的时机"></a>类加载的时机</h1><p>类型的生命周期：加载(Loading) -&gt; 验证(Verification)-&gt;准备(Preparation)-&gt;解析(Resolution)-&gt;初始化(Initialization)-&gt;使用(Using)-&gt;卸载(Unloading)</p>
 <img src="/images/java/JVM/ClassLoader.jpg" class="" title="类加载过程">
 
@@ -387,9 +448,9 @@
 <p>被动引用不会触发初始化：</p>
 <blockquote>
 <ol>
-<li>通过子类引用父类的静态字段，父类会初始化，子类不会</li>
-<li>通过数组定义引用类，不会初始化。new对象往数组里添加时，new会导致初始化。</li>
-<li>常量会在编译期存入<strong><em>调用类</em></strong>的常量池中，本质上并没有直接引用到定义常量的类，不会导致类的初始化</li>
+<li>通过子类引用父类的<strong>静态字段</strong>，父类会初始化，子类不会</li>
+<li>通过<strong>数组</strong>定义引用类，不会初始化。new对象往数组里添加时，new会导致初始化。</li>
+<li><strong>常量</strong>会在编译期存入<strong><em>调用类</em></strong>的常量池中，本质上并没有直接引用到定义常量的类，不会导致类的初始化</li>
 </ol>
 </blockquote>
 <p>接口的初始化：</p>
@@ -563,6 +624,39 @@
 <blockquote>
 <p>自己写的java.long.Object类可以编译,但无法被加载</p>
 </blockquote>
+<p><img src="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD/jdk9%E4%B9%8B%E5%90%8E%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%99%A8.png" alt="jdk9之后的加载器"></p>
+<p>扩展类加载器被平台类加载器取代：</p>
+<ul>
+<li>JDK基于模块化构建，Java类库天然满足可扩展的需求，不需要<JAVA_HOME>\lib\ext目录来扩展JDK功能。</li>
+</ul>
+<p>类似的，<JAVA_HOME>\jre目录也不需要存在，因为可以随时组合出程序运行的jre来。</p>
+<p>####　双亲委派模型的破坏</p>
+<ol>
+<li><p>双亲委派模型在1.2被引进，1.1就有类加载器的概念。</p>
+<ul>
+<li>为了兼容，无法避免loadclass被子类重写的情况，加入findclass（），引导用户重写此方法</li>
+</ul>
+</li>
+<li><p>有基础类型调回用户的代码，JNDI，</p>
+<ul>
+<li>引入，线程上下文类加载器</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD/%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8.png" alt="线程上下文类加载器"></p>
+</li>
+<li><p>对程序的动态性的追求，热替换，热部署等。</p>
+<ul>
+<li>OSGI：不是双亲委派的树结构，网状结构</li>
+</ul>
+</li>
+<li><p>模块化系统：在平台/应用程序类加载器收到类的请求的时候，</p>
+<ul>
+<li>在委托父加载器之前，判断是否属于某个系统模块<ul>
+<li>找到这样的归属关系，<strong>优先委派</strong>给那个<strong>模块的加载器</strong>加载</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
 
     </div>
 
@@ -572,9 +666,6 @@
       
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\GC\" rel="bookmark">垃圾回收</a></div>
-    </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\对象的内存区域\" rel="bookmark">内存区域与溢出异常</a></div>
     </li>
@@ -598,12 +689,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/GC/" rel="prev" title="垃圾回收">
-      <i class="fa fa-chevron-left"></i> 垃圾回收
+    <a href="/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="prev" title="内存区域与溢出异常">
+      <i class="fa fa-chevron-left"></i> 内存区域与溢出异常
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/05/hello-world/" rel="next" title="Hello World">
-      Hello World <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/05/java/jvm/GC/" rel="next" title="垃圾回收">
+      垃圾回收 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -664,7 +755,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机类加载机制"><span class="nav-number">1.</span> <span class="nav-text">虚拟机类加载机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载过程"><span class="nav-number">2.</span> <span class="nav-text">类加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#lt-clinit-gt-（）方法分析"><span class="nav-number">2.1.</span> <span class="nav-text">&lt;clinit&gt;（）方法分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象创建的过程"><span class="nav-number">3.</span> <span class="nav-text">对象创建的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#init函数分析"><span class="nav-number">3.1.</span> <span class="nav-text">init函数分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象创建的一些要点"><span class="nav-number">3.2.</span> <span class="nav-text">对象创建的一些要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">3.3.</span> <span class="nav-text">对象的内存布局</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载的时机"><span class="nav-number">4.</span> <span class="nav-text">类加载的时机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载的过程"><span class="nav-number">4.1.</span> <span class="nav-text">类加载的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加载"><span class="nav-number">4.1.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证"><span class="nav-number">4.1.2.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">4.1.3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">4.1.4.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">4.1.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载器"><span class="nav-number">4.2.</span> <span class="nav-text">类加载器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类与类加载器"><span class="nav-number">4.2.1.</span> <span class="nav-text">类与类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双亲委派模型"><span class="nav-number">4.2.2.</span> <span class="nav-text">双亲委派模型</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机类加载机制"><span class="nav-number">1.</span> <span class="nav-text">虚拟机类加载机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载过程"><span class="nav-number">2.</span> <span class="nav-text">类加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#lt-clinit-gt-（）方法分析"><span class="nav-number">2.1.</span> <span class="nav-text">&lt;clinit&gt;（）方法分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程时类加载的方案"><span class="nav-number">2.2.</span> <span class="nav-text">多线程时类加载的方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象创建的过程"><span class="nav-number">3.</span> <span class="nav-text">对象创建的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#init函数分析"><span class="nav-number">3.1.</span> <span class="nav-text">init函数分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象创建的一些要点"><span class="nav-number">4.</span> <span class="nav-text">对象创建的一些要点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">5.</span> <span class="nav-text">对象的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指针压缩"><span class="nav-number">5.0.1.</span> <span class="nav-text">指针压缩</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载的时机"><span class="nav-number">6.</span> <span class="nav-text">类加载的时机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载的过程"><span class="nav-number">6.1.</span> <span class="nav-text">类加载的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加载"><span class="nav-number">6.1.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#验证"><span class="nav-number">6.1.2.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">6.1.3.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">6.1.4.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">6.1.5.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类加载器"><span class="nav-number">6.2.</span> <span class="nav-text">类加载器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类与类加载器"><span class="nav-number">6.2.1.</span> <span class="nav-text">类与类加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双亲委派模型"><span class="nav-number">6.2.2.</span> <span class="nav-text">双亲委派模型</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -680,20 +771,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -737,12 +828,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">48k</span>
+    <span title="站点总字数">74k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">44 分钟</span>
+    <span title="站点阅读时长">1:07</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
