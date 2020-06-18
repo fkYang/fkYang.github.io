@@ -28,7 +28,7 @@
 <meta property="og:description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-05-04T06:27:29.731Z">
+<meta property="article:modified_time" content="2020-05-13T12:39:11.586Z">
 <meta property="article:author" content="fkY">
 <meta property="article:tag" content="jvm">
 <meta property="article:tag" content="java">
@@ -232,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-04 14:27:29" itemprop="dateModified" datetime="2020-05-04T14:27:29+08:00">2020-05-04</time>
+                <time title="修改时间：2020-05-13 20:39:11" itemprop="dateModified" datetime="2020-05-13T20:39:11+08:00">2020-05-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,14 +257,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.6k</span>
+              <span>3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -354,10 +354,61 @@
 </ul>
 </blockquote>
 <p>static与special调用的方法，在类加载阶段可以唯一确定调用的版本</p>
-<h3 id="分派Dispatch"><a href="#分派Dispatch" class="headerlink" title="分派Dispatch"></a>分派Dispatch</h3><ol>
-<li>重写：根据方法的参数选择，静态</li>
-<li>/重载：根据方法的调用者选择，动态</li>
+<h3 id="分派Dispatch，重写，重载"><a href="#分派Dispatch，重写，重载" class="headerlink" title="分派Dispatch，重写，重载"></a>分派Dispatch，重写，重载</h3><p>方法签名：方法名+参数类型（不包括返回值）</p>
+<ol>
+<li>重写：根据方法的参数选择，静态<ol>
+<li>重写发生在运行期，是子类对父类的允许访问的方法的实现过程进行重新编写。</li>
+<li>返回值类型、方法名、参数列表必须相同，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类。</li>
+<li>如果父类方法访问修饰符为 private/final/static 则子类就不能重写该方法，但是被 static 修饰的方法能够被再次声明。</li>
+<li>构造方法无法被重写</li>
+<li><strong>重写就是子类对父类方法的重新改造，外部样子不能改变，内部逻辑可以改变</strong></li>
 </ol>
+</li>
+<li>重载：根据方法的调用者选择，动态<ol>
+<li>发生在同一个类中，方法名必须相同，参数类型不同、个数不同、顺序不同，方法返回值和访问修饰符可以不同。</li>
+<li><strong>重载就是同一个类中多个同名方法根据不同的传参来执行不同的逻辑处理。</strong></li>
+</ol>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>区别点</th>
+<th>重载方法</th>
+<th>重写方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发生范围</td>
+<td>同一个类</td>
+<td>子类 中</td>
+</tr>
+<tr>
+<td>参数列表</td>
+<td>必须修改</td>
+<td>一定不能修改</td>
+</tr>
+<tr>
+<td>返回类型</td>
+<td>可修改</td>
+<td>一定不能修改</td>
+</tr>
+<tr>
+<td>异常</td>
+<td>可修改</td>
+<td>可以减少或删除，一定不能抛出新的或者更广的异常</td>
+</tr>
+<tr>
+<td>访问修饰符</td>
+<td>可修改</td>
+<td>一定不能做更严格的限制（可以降低限制）</td>
+</tr>
+<tr>
+<td>发生阶段</td>
+<td>编译期</td>
+<td>运行期</td>
+</tr>
+</tbody></table>
 <ul>
 <li>静态分派： 依据==静态类型==决定方法执行版本的分派动作。<em>编译阶段</em></li>
 </ul>
@@ -440,10 +491,10 @@
   <div class="popular-posts-header">相关文章</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\对象的内存区域\" rel="bookmark">内存区域与溢出异常</a></div>
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\类文件结构\" rel="bookmark">类文件结构</a></div>
     </li>
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\类文件结构\" rel="bookmark">类文件结构</a></div>
+      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\对象的内存区域\" rel="bookmark">内存区域与溢出异常</a></div>
     </li>
     <li class="popular-posts-item">
       <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
@@ -530,7 +581,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机字节码执行引擎"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧区域"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作数栈"><span class="nav-number">1.1.2.</span> <span class="nav-text">操作数栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态连接"><span class="nav-number">1.1.3.</span> <span class="nav-text">动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法返回地址"><span class="nav-number">1.1.4.</span> <span class="nav-text">方法返回地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附加信息"><span class="nav-number">1.1.5.</span> <span class="nav-text">附加信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法调用"><span class="nav-number">1.2.</span> <span class="nav-text">方法调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">1.2.1.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分派Dispatch"><span class="nav-number">1.2.2.</span> <span class="nav-text">分派Dispatch</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态类型语言支持"><span class="nav-number">1.3.</span> <span class="nav-text">动态类型语言支持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke包"><span class="nav-number">1.3.1.</span> <span class="nav-text">invoke包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invokedynamic指令"><span class="nav-number">1.3.2.</span> <span class="nav-text">invokedynamic指令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于栈的字节码解释执行引擎"><span class="nav-number">1.4.</span> <span class="nav-text">基于栈的字节码解释执行引擎</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机字节码执行引擎"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧区域"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作数栈"><span class="nav-number">1.1.2.</span> <span class="nav-text">操作数栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态连接"><span class="nav-number">1.1.3.</span> <span class="nav-text">动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法返回地址"><span class="nav-number">1.1.4.</span> <span class="nav-text">方法返回地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附加信息"><span class="nav-number">1.1.5.</span> <span class="nav-text">附加信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法调用"><span class="nav-number">1.2.</span> <span class="nav-text">方法调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">1.2.1.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分派Dispatch，重写，重载"><span class="nav-number">1.2.2.</span> <span class="nav-text">分派Dispatch，重写，重载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态类型语言支持"><span class="nav-number">1.3.</span> <span class="nav-text">动态类型语言支持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke包"><span class="nav-number">1.3.1.</span> <span class="nav-text">invoke包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invokedynamic指令"><span class="nav-number">1.3.2.</span> <span class="nav-text">invokedynamic指令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于栈的字节码解释执行引擎"><span class="nav-number">1.4.</span> <span class="nav-text">基于栈的字节码解释执行引擎</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -546,20 +597,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -603,12 +654,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">74k</span>
+    <span title="站点总字数">105k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:07</span>
+    <span title="站点阅读时长">1:35</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
