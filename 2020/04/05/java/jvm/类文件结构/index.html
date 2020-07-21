@@ -17,22 +17,19 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="类文件结构write once, run anywhere :代码编译的结果从本地机器码  转变为字节码，与操作系统和机器指令集无关，平台中立的格式作为程序编译后的结果 Java虚拟机，识别.class文件。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="类文件结构">
+<meta property="og:title" content="JVM--类文件结构">
 <meta property="og:url" content="http://yoursite.com/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="白苏的GitHub个人主页">
 <meta property="og:description" content="类文件结构write once, run anywhere :代码编译的结果从本地机器码  转变为字节码，与操作系统和机器指令集无关，平台中立的格式作为程序编译后的结果 Java虚拟机，识别.class文件。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-04-05T10:40:54.208Z">
+<meta property="article:modified_time" content="2020-07-05T08:24:14.786Z">
 <meta property="article:author" content="fkY">
-<meta property="article:tag" content="jvm">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="class文件">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://yoursite.com/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
@@ -48,7 +45,7 @@
   };
 </script>
 
-  <title>类文件结构 | 白苏的GitHub个人主页</title>
+  <title>JVM--类文件结构 | 白苏的GitHub个人主页</title>
   
 
 
@@ -214,7 +211,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          类文件结构
+          JVM--类文件结构
         </h1>
 
         <div class="post-meta">
@@ -224,10 +221,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-04-05 00:00:00 / 修改时间：18:40:54" itemprop="dateCreated datePublished" datetime="2020-04-05T00:00:00+08:00">2020-04-05</time>
+              <time title="创建时间：2020-04-05 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-05T00:00:00+08:00">2020-04-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-05 16:24:14" itemprop="dateModified" datetime="2020-07-05T16:24:14+08:00">2020-07-05</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -239,10 +242,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/JAVA/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JVM/CLASS/" itemprop="url" rel="index"><span itemprop="name">CLASS</span></a>
                 </span>
             </span>
 
@@ -418,26 +417,9 @@
     
     
       
-  <div class="popular-posts-header">相关文章</div>
-  <ul class="popular-posts">
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\对象的内存区域\" rel="bookmark">内存区域与溢出异常</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\06\java\jvm\运行时区域与调用\" rel="bookmark">字节码执行引擎</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
-    </li>
-  </ul>
 
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/jvm/" rel="tag"># jvm</a>
-              <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/class%E6%96%87%E4%BB%B6/" rel="tag"># class文件</a>
-          </div>
 
         
 
@@ -445,12 +427,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/04/testPhoto/" rel="prev" title="testPhoto">
-      <i class="fa fa-chevron-left"></i> testPhoto
+    <a href="/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="prev" title="JVM--内存区域与溢出异常">
+      <i class="fa fa-chevron-left"></i> JVM--内存区域与溢出异常
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="next" title="内存区域与溢出异常">
-      内存区域与溢出异常 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/05/java/jvm/ClassLoader/" rel="next" title="JVM--类加载机制">
+      JVM--类加载机制 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -534,13 +516,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -584,14 +566,14 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">105k</span>
+    <span title="站点总字数">144k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:35</span>
+    <span title="站点阅读时长">2:11</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
         

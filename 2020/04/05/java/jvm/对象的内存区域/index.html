@@ -17,23 +17,23 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="chapter 2 java内存区域与内存溢出异常2.2 运行时数据区域">
+  <meta name="description" content="java内存区域1.1 运行时数据区域">
 <meta property="og:type" content="article">
-<meta property="og:title" content="内存区域与溢出异常">
+<meta property="og:title" content="JVM--内存区域与溢出异常">
 <meta property="og:url" content="http://yoursite.com/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/index.html">
 <meta property="og:site_name" content="白苏的GitHub个人主页">
-<meta property="og:description" content="chapter 2 java内存区域与内存溢出异常2.2 运行时数据区域">
+<meta property="og:description" content="java内存区域1.1 运行时数据区域">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fkyang-blog-cloud-photo.oss-cn-beijing.aliyuncs.com/img/java/JVM/jdkMemory.png">
+<meta property="og:image" content="https://fkyang-blog-cloud-photo.oss-cn-beijing.aliyuncs.com/img/java/JVM/JDK1-8Memory.jpg">
 <meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-05-04T00:43:45.183Z">
+<meta property="article:modified_time" content="2020-07-05T10:34:42.626Z">
 <meta property="article:author" content="fkY">
-<meta property="article:tag" content="jvm">
-<meta property="article:tag" content="java">
-<meta property="article:tag" content="memories">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fkyang-blog-cloud-photo.oss-cn-beijing.aliyuncs.com/img/java/JVM/jdkMemory.png">
 
 <link rel="canonical" href="http://yoursite.com/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/">
 
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>内存区域与溢出异常 | 白苏的GitHub个人主页</title>
+  <title>JVM--内存区域与溢出异常 | 白苏的GitHub个人主页</title>
   
 
 
@@ -214,7 +214,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          内存区域与溢出异常
+          JVM--内存区域与溢出异常
         </h1>
 
         <div class="post-meta">
@@ -232,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-04 08:43:45" itemprop="dateModified" datetime="2020-05-04T08:43:45+08:00">2020-05-04</time>
+                <time title="修改时间：2020-07-05 18:34:42" itemprop="dateModified" datetime="2020-07-05T18:34:42+08:00">2020-07-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -245,10 +245,6 @@
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/JAVA/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JVM/JAVA%E5%86%85%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">JAVA内存</span></a>
                 </span>
             </span>
 
@@ -284,9 +280,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="chapter-2-java内存区域与内存溢出异常"><a href="#chapter-2-java内存区域与内存溢出异常" class="headerlink" title="chapter 2 java内存区域与内存溢出异常"></a>chapter 2 java内存区域与内存溢出异常</h2><h2 id="2-2-运行时数据区域"><a href="#2-2-运行时数据区域" class="headerlink" title="2.2 运行时数据区域"></a>2.2 运行时数据区域</h2><a id="more"></a>
+        <h2 id="java内存区域"><a href="#java内存区域" class="headerlink" title="java内存区域"></a>java内存区域</h2><h2 id="1-1-运行时数据区域"><a href="#1-1-运行时数据区域" class="headerlink" title="1.1 运行时数据区域"></a>1.1 运行时数据区域</h2><a id="more"></a>
 
-<h3 id="程序计数器：线程私有"><a href="#程序计数器：线程私有" class="headerlink" title="程序计数器：线程私有"></a>程序计数器：线程私有</h3><p><strong><em>较小的内存空间，当前线程所执行的字节码的行号指示器</em></strong></p>
+<p><img src="https://fkyang-blog-cloud-photo.oss-cn-beijing.aliyuncs.com/img/java/JVM/jdkMemory.png" alt="jdkMemory"></p>
+<p>jdk1.8之后元空间</p>
+<img src="https://fkyang-blog-cloud-photo.oss-cn-beijing.aliyuncs.com/img/java/JVM/JDK1-8Memory.jpg" alt="JDK1-8Memory" style="zoom:67%;" />
+
+
+
+<h3 id="1-程序计数器：线程私有"><a href="#1-程序计数器：线程私有" class="headerlink" title="1. 程序计数器：线程私有"></a>1. 程序计数器：线程私有</h3><p><strong><em>较小的内存空间，当前线程所执行的字节码的行号指示器</em></strong></p>
 <table>
 <thead>
 <tr>
@@ -303,7 +305,7 @@
 <td>计数器数值为 <strong><em>空</em></strong> Undefined</td>
 </tr>
 </tbody></table>
-<h3 id="java虚拟机栈：线程私有"><a href="#java虚拟机栈：线程私有" class="headerlink" title="java虚拟机栈：线程私有"></a>java虚拟机栈：线程私有</h3><ol>
+<h3 id="2-java虚拟机栈：线程私有"><a href="#2-java虚拟机栈：线程私有" class="headerlink" title="2. java虚拟机栈：线程私有"></a>2. java虚拟机栈：线程私有</h3><ol>
 <li><p>生命周期与线程相同</p>
 </li>
 <li><p>每一个<strong><em>方法（java方法）</em></strong>被调用到执行完毕返回，对应着栈帧在虚拟机的入栈与出栈过程</p>
@@ -358,7 +360,7 @@
 </blockquote>
 </li>
 </ol>
-<h3 id="方法区：线程共享，元空间"><a href="#方法区：线程共享，元空间" class="headerlink" title="方法区：线程共享，元空间"></a>方法区：线程共享，元空间</h3><ol>
+<h3 id="3-方法区：线程共享，元空间"><a href="#3-方法区：线程共享，元空间" class="headerlink" title="3. 方法区：线程共享，元空间"></a>3. 方法区：线程共享，元空间</h3><ol>
 <li><p>存储虚拟机<strong><em>加载</em></strong>的类型信息，常量，静态变量，即时编译器编译后的代码缓存等数据。</p>
 <blockquote>
 <p>jdk 8 之前，永久代概念，实现。字符串常量池+静态变量 在jdk7移到堆中</p>
@@ -366,8 +368,7 @@
 </li>
 </ol>
 <blockquote>
-<p>jdk 8 ，完全废弃永久代概念，改为在本地内存中实现的<strong><em>元空间</em></strong>来替代。—-存储内容：类型数据</p>
-<p>字符串常量池：</p>
+<p>jdk 8 ，完全废弃永久代概念，改为在<strong>本地内存</strong>中实现的<strong><em>元空间</em></strong>来替代。—-存储内容：类型数据</p>
 </blockquote>
 <p>  异常类型：OOM，方法区无法满足新的内存分配需求。</p>
 <blockquote>
@@ -402,8 +403,8 @@
 </li>
 </ol>
 </blockquote>
-<h3 id="运行时常量池-：-方法区的一部分"><a href="#运行时常量池-：-方法区的一部分" class="headerlink" title="运行时常量池 ： 方法区的一部分"></a>运行时常量池 ： 方法区的一部分</h3><p><em>class文件</em>：类版本，字段，方法，接口等描述信息+ 常量池表。</p>
-<p>通过 String.intern()方法不断往运行时常量池里加字符串变量，最后ava.lang.OutOfMemoryError: Java heap space。证明java常量池字符串对象存储位置是堆空间。</p>
+<h4 id="3-1-运行时常量池-：-方法区的一部分"><a href="#3-1-运行时常量池-：-方法区的一部分" class="headerlink" title="3.1 运行时常量池 ： 方法区的一部分"></a>3.1 运行时常量池 ： 方法区的一部分</h4><p><em>class文件</em>：类版本，字段，方法，接口等描述信息+ 常量池表。</p>
+<p>通过 String.intern()方法不断往运行时常量池里加字符串变量，最后Java.lang.OutOfMemoryError: Java heap space。证明java常量池字符串对象存储位置是堆空间。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">           String temp = String.valueOf(i).intern();</span><br><span class="line">           list.add(temp);</span><br><span class="line">       &#125;</span><br><span class="line">  <span class="comment">//     -Xms12M -Xmx12M,虚拟机运行参数，设置堆空间12m</span></span><br></pre></td></tr></table></figure>
 
 <p>   <strong><em>动态性</em></strong>：编译期可以产生常量，运行时也可以把新的常量放入池中。</p>
@@ -415,7 +416,7 @@
 <blockquote>
 <p>NIO基于通道与缓冲区的I/O方式，使用Native函数库直接分配堆外内存，通过一个堆中的DirectByteBuffer对象作为此内存的引用进行操作，避免在Java堆与Native堆相互复制数据。</p>
 </blockquote>
-<h2 id="2-3-HotSpot虚拟机对象揭秘"><a href="#2-3-HotSpot虚拟机对象揭秘" class="headerlink" title="2.3 HotSpot虚拟机对象揭秘"></a>2.3 HotSpot虚拟机对象揭秘</h2><blockquote>
+<h2 id="1-2-HotSpot虚拟机"><a href="#1-2-HotSpot虚拟机" class="headerlink" title="1.2 HotSpot虚拟机"></a>1.2 HotSpot虚拟机</h2><blockquote>
 <p>针对HotSpot虚拟机，java堆</p>
 </blockquote>
 <h3 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h3><ol>
@@ -547,26 +548,9 @@
     
     
       
-  <div class="popular-posts-header">相关文章</div>
-  <ul class="popular-posts">
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\类文件结构\" rel="bookmark">类文件结构</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\06\java\jvm\运行时区域与调用\" rel="bookmark">字节码执行引擎</a></div>
-    </li>
-    <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="\2020\04\05\java\jvm\ClassLoader\" rel="bookmark">类加载机制</a></div>
-    </li>
-  </ul>
 
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/jvm/" rel="tag"># jvm</a>
-              <a href="/tags/java/" rel="tag"># java</a>
-              <a href="/tags/memories/" rel="tag"># memories</a>
-          </div>
 
         
 
@@ -574,12 +558,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/" rel="prev" title="类文件结构">
-      <i class="fa fa-chevron-left"></i> 类文件结构
+    <a href="/2020/04/04/testPhoto/" rel="prev" title="testPhoto">
+      <i class="fa fa-chevron-left"></i> testPhoto
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/GC/" rel="next" title="垃圾回收">
-      垃圾回收 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/" rel="next" title="JVM--类文件结构">
+      JVM--类文件结构 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -640,7 +624,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#chapter-2-java内存区域与内存溢出异常"><span class="nav-number">1.</span> <span class="nav-text">chapter 2 java内存区域与内存溢出异常</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-运行时数据区域"><span class="nav-number">2.</span> <span class="nav-text">2.2 运行时数据区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#程序计数器：线程私有"><span class="nav-number">2.1.</span> <span class="nav-text">程序计数器：线程私有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java虚拟机栈：线程私有"><span class="nav-number">2.2.</span> <span class="nav-text">java虚拟机栈：线程私有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地方法栈"><span class="nav-number">2.3.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java堆-：-线程共享"><span class="nav-number">2.4.</span> <span class="nav-text">java堆 ： 线程共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法区：线程共享，元空间"><span class="nav-number">2.5.</span> <span class="nav-text">方法区：线程共享，元空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时常量池-：-方法区的一部分"><span class="nav-number">2.6.</span> <span class="nav-text">运行时常量池 ： 方法区的一部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#直接内存：本机内存，不属于java虚拟机运行时数据区的一部分"><span class="nav-number">2.7.</span> <span class="nav-text">直接内存：本机内存，不属于java虚拟机运行时数据区的一部分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-HotSpot虚拟机对象揭秘"><span class="nav-number">3.</span> <span class="nav-text">2.3 HotSpot虚拟机对象揭秘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的创建"><span class="nav-number">3.1.</span> <span class="nav-text">对象的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">3.1.1.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象的访问定位"><span class="nav-number">3.1.2.</span> <span class="nav-text">对象的访问定位</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟机测试实例"><span class="nav-number">3.2.</span> <span class="nav-text">虚拟机测试实例</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#java内存区域"><span class="nav-number">1.</span> <span class="nav-text">java内存区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-运行时数据区域"><span class="nav-number">2.</span> <span class="nav-text">1.1 运行时数据区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-程序计数器：线程私有"><span class="nav-number">2.1.</span> <span class="nav-text">1. 程序计数器：线程私有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-java虚拟机栈：线程私有"><span class="nav-number">2.2.</span> <span class="nav-text">2. java虚拟机栈：线程私有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本地方法栈"><span class="nav-number">2.3.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java堆-：-线程共享"><span class="nav-number">2.4.</span> <span class="nav-text">java堆 ： 线程共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-方法区：线程共享，元空间"><span class="nav-number">2.5.</span> <span class="nav-text">3. 方法区：线程共享，元空间</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-运行时常量池-：-方法区的一部分"><span class="nav-number">2.5.1.</span> <span class="nav-text">3.1 运行时常量池 ： 方法区的一部分</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#直接内存：本机内存，不属于java虚拟机运行时数据区的一部分"><span class="nav-number">2.6.</span> <span class="nav-text">直接内存：本机内存，不属于java虚拟机运行时数据区的一部分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-HotSpot虚拟机"><span class="nav-number">3.</span> <span class="nav-text">1.2 HotSpot虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的创建"><span class="nav-number">3.1.</span> <span class="nav-text">对象的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">3.1.1.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对象的访问定位"><span class="nav-number">3.1.2.</span> <span class="nav-text">对象的访问定位</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟机测试实例"><span class="nav-number">3.2.</span> <span class="nav-text">虚拟机测试实例</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -663,13 +647,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -713,14 +697,14 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">105k</span>
+    <span title="站点总字数">144k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:35</span>
+    <span title="站点阅读时长">2:11</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
         

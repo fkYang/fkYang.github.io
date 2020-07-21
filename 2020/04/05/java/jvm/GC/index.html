@@ -17,12 +17,12 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="垃圾收集器与内存分配策略现在都是准确性垃圾回收 关注要点：  那些内存需要回收 什么时候开始回收 如何回收   学习垃圾回收原因：虽然垃圾回收已经自动化，但是当垃圾回收成为更高并发量的瓶颈时，需要对其进行监控和调节">
 <meta property="og:type" content="article">
-<meta property="og:title" content="垃圾回收">
+<meta property="og:title" content="JVM--垃圾回收">
 <meta property="og:url" content="http://yoursite.com/2020/04/05/java/jvm/GC/index.html">
 <meta property="og:site_name" content="白苏的GitHub个人主页">
 <meta property="og:description" content="垃圾收集器与内存分配策略现在都是准确性垃圾回收 关注要点：  那些内存需要回收 什么时候开始回收 如何回收   学习垃圾回收原因：虽然垃圾回收已经自动化，但是当垃圾回收成为更高并发量的瓶颈时，需要对其进行监控和调节">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-CMS%E6%94%B6%E9%9B%86%E5%99%A8.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-G1%E6%94%B6%E9%9B%86%E5%99%A8.jpg">
 <meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-05-17T08:00:03.684Z">
+<meta property="article:modified_time" content="2020-07-10T01:10:17.486Z">
 <meta property="article:author" content="fkY">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%A6%82%E8%BF%B0%E5%9B%BE.jpg">
@@ -51,7 +51,7 @@
   };
 </script>
 
-  <title>垃圾回收 | 白苏的GitHub个人主页</title>
+  <title>JVM--垃圾回收 | 白苏的GitHub个人主页</title>
   
 
 
@@ -217,7 +217,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          垃圾回收
+          JVM--垃圾回收
         </h1>
 
         <div class="post-meta">
@@ -235,7 +235,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-17 16:00:03" itemprop="dateModified" datetime="2020-05-17T16:00:03+08:00">2020-05-17</time>
+                <time title="修改时间：2020-07-10 09:10:17" itemprop="dateModified" datetime="2020-07-10T09:10:17+08:00">2020-07-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,14 +264,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.1k</span>
+              <span>7.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>7 分钟</span>
             </span>
 
         </div>
@@ -375,6 +375,24 @@
 </ol>
 </blockquote>
 <p>#　垃圾回收算法</p>
+<h3 id="新生代：标记复制"><a href="#新生代：标记复制" class="headerlink" title="新生代：标记复制"></a>新生代：标记复制</h3><p>不使用整理原因：整理比复制多了对象的拷贝（为了减少内存碎片）</p>
+<ol>
+<li>复制：从其他地方，移动到 suivi区<ol>
+<li>直接将存活对象复制到另一块空闲内存区域中</li>
+<li>按顺序分配内存–无内存碎片化问题</li>
+</ol>
+</li>
+<li>整理：进行对象的交换（为了减少内存碎片）</li>
+</ol>
+<h3 id="老年代：标记-整理"><a href="#老年代：标记-整理" class="headerlink" title="老年代：标记-整理"></a>老年代：标记-整理</h3><p>标记整理算法解决来标记-清除算法的<strong>内存碎片化</strong>的问题，又解决了复制算法的两个Survivor区（<strong>额外内存</strong>）的问题</p>
+<p>不用 标记–复制</p>
+<ul>
+<li>标记复制，在存活对象数量较多时，<ul>
+<li>需要很多复制</li>
+<li>也需要额外的内存空间</li>
+</ul>
+</li>
+</ul>
 <ul>
 <li>弱分代：大多数对象是朝生夕灭的</li>
 <li>强分代：熬过多次垃圾收集过程的对象就越难以消亡。</li>
@@ -463,7 +481,7 @@
 <li>卡精度：记录精确到一块内存区域———最常见的</li>
 </ul>
 <p>卡表的一个单位，卡页通常不止一个对象，但只要有对象存在跨代引用，则该卡页标识为1</p>
-<h2 id="写屏障"><a href="#写屏障" class="headerlink" title="写屏障"></a>写屏障</h2><h2 id="并行的可达性分析"><a href="#并行的可达性分析" class="headerlink" title="并行的可达性分析"></a>并行的可达性分析</h2><p>三色标记算法：</p>
+<h2 id="GCRoot并行的可达性分析"><a href="#GCRoot并行的可达性分析" class="headerlink" title="GCRoot并行的可达性分析"></a>GCRoot并行的可达性分析</h2><p>三色标记算法：</p>
 <ul>
 <li>黑色：确定对象为非垃圾，并且其成员变量也找完了</li>
 <li>灰色：确定对象为非垃圾，但是其成员变量尚未标完</li>
@@ -475,11 +493,15 @@
 </blockquote>
 <p>解决方法：</p>
 <ul>
-<li>增量更新Incremental Update：黑色对象中新增指向白色对象的引用，把黑色对象变灰色CMS<ul>
+<li>增量更新Incremental Update：黑色对象中新增指向白色对象的引用，把黑色对象变灰色<ul>
 <li>写屏障更新</li>
+<li>CMS</li>
 </ul>
 </li>
-<li>原始快照Snapshot At The Beginning：灰色对象删除指向白色对象的引用时，记录删除的引用，并发扫描结束后，看这些记录的删除的引用是否有引用指向</li>
+<li>原始快照Snapshot At The Beginning：灰色对象删除指向白色对象的引用时，记录删除的引用（白色），并发扫描结束后，看这些记录的删除的白色引用是否存在可达的（黑色）引用指向<ul>
+<li>G1</li>
+</ul>
+</li>
 </ul>
 <h1 id="经典的垃圾回收器"><a href="#经典的垃圾回收器" class="headerlink" title="经典的垃圾回收器"></a>经典的垃圾回收器</h1><p><img src="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%A6%82%E8%BF%B0%E5%9B%BE.jpg" alt="HotSpot垃圾收集器"></p>
 <p>Serial 几十M</p>
@@ -514,7 +536,7 @@
 <p>优点：简单而高效， 额外内存消耗最小，单核处理器的时候，没有线程交互的开销，效率高</p>
 <p>大多数适合运行在客户端模式下的虚拟机</p>
 <p><img src="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-Serial%E6%94%B6%E9%9B%86%E5%99%A8.jpg" alt="HotSpot垃圾收集器-Serial收集器"></p>
-<h2 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h2><p>serial收集器的<strong>多线程并行*版本，基于</strong>标记复制<strong>算法，</strong>STW**</p>
+<h2 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h2><p>serial收集器的<strong>多线程并行</strong>版本，基于<strong>标记复制</strong>算法 ，<strong>STW</strong></p>
 <p>能与CMS收集器配合工作，适合于服务端模式下的</p>
 <p>在G1收集器出世之后，作为CMS处理新生代的基本组成部分，也是第一款退出的收集器。</p>
 <p><img src="https://raw.githubusercontent.com/fkYang/CloudingPhoto/master/img/HotSpot%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8-ParNew%E6%94%B6%E9%9B%86%E5%99%A8.jpg" alt="HotSpot垃圾收集器-ParNew收集器"></p>
@@ -575,14 +597,15 @@
 <td>每个region维护一个卡表，记录自己指向其他，与其他指向自己</td>
 </tr>
 </tbody></table>
-<h2 id="CMS收集器-Concurrent-Mark-Sweep-Old"><a href="#CMS收集器-Concurrent-Mark-Sweep-Old" class="headerlink" title="CMS收集器 Concurrent Mark Sweep Old"></a>CMS收集器 Concurrent Mark Sweep Old</h2><p>目标：<em>最短停顿时间</em></p>
+<h2 id="CMS收集器-Concurrent-Mark-Sweep-Old"><a href="#CMS收集器-Concurrent-Mark-Sweep-Old" class="headerlink" title="CMS收集器 Concurrent Mark Sweep Old"></a>CMS收集器 Concurrent Mark Sweep Old</h2><p>目标：<em>最短停顿时间</em>，基于<strong>标记清除</strong>，</p>
 <p>适用于服务的响应速度要求高，系统的停顿时间短，更好的交互体验。</p>
 <blockquote>
 <p>耗时最长的2，4并发标记/清除都是并发工作的</p>
 <p>由于并发：</p>
 <ol>
 <li>gc线程占用资源</li>
-<li>并发清除时间长，浮动垃圾</li>
+<li>并发清除时间长，并发清除期间产生浮动垃圾</li>
+<li>标记整理 碎片化</li>
 </ol>
 </blockquote>
 <p>基于<strong>标记清除</strong>，过程分为四步</p>
@@ -622,11 +645,12 @@
 </ol>
 </li>
 </ol>
-<h2 id="Garbage-First收集器-young-old"><a href="#Garbage-First收集器-young-old" class="headerlink" title="Garbage First收集器 young+old"></a>Garbage First收集器 young+old</h2><p>停顿时间模型的收集器：在长度M的时间片段中，垃圾回收消耗的时间大概率不超过N的目标</p>
+<h2 id="Garbage-First收集器-young-old"><a href="#Garbage-First收集器-young-old" class="headerlink" title="Garbage First收集器 young+old"></a>Garbage First收集器 young+old</h2><p><strong>标记复制算法</strong></p>
+<p><strong>停顿时间模型</strong>的收集器：在长度M的时间片段中，垃圾回收消耗的时间大概率不超过N的目标</p>
 <p>面向<strong>局部收集</strong>的设计思路，基于<strong>Region的内存布局</strong>。全功能的垃圾收集器。面向服务端的垃圾收集器，</p>
-<p>局部收集：面向对内存的任何部分来组成<strong>回收集</strong>（Collection set Cset）进行回收，回收的衡量标准是哪块内存中存放的垃圾数量最多，<em>回收收益最大</em>。<strong>标记复制算法</strong></p>
+<p>局部收集：面向对内存的任何部分来组成<strong>回收集</strong>（Collection set Cset）进行回收，回收的衡量标准是哪块内存中存放的垃圾数量最多，<em>回收收益最大</em>。</p>
 <p>###　Region堆内存模型</p>
-<p>Ｇ１遵循分代收集理论，但不再坚持固定大小／数量的内存区域划分；把连续的Ｊａｖａ堆划分为多个大小相同的独立区域Region（-XX：G1HeapRegionSize 设置大小 1-32M 2的n次幂）。每一个Refion都可以是Eden，suivive，老年代区域，收集器根据region所属的类型采用不同的垃圾回收策略。</p>
+<p>G1遵循分代收集理论，但不再坚持固定大小／数量的内存区域划分；把连续的Ｊａｖａ堆划分为多个大小相同的独立区域Region（-XX：G1HeapRegionSize 设置大小 1-32M 2的n次幂）。每一个Region都可以是Eden，suivive，老年代区域，收集器根据region所属的类型采用不同的垃圾回收策略。</p>
 <p>Humongous区域：专门用来存储大对象的区域。基本上当作老年代</p>
 <ul>
 <li>大对象：大小超过了一个Region容量的一半的对象。</li>
@@ -661,7 +685,7 @@
 <p><em>目标：收集的速度跟得上对象分配的速度</em></p>
 <p>G1相对CMS优点：可以指定最大停顿时间，整体标记整理，局部标记复制，垃圾收集能够提供规整的可用内存</p>
 <p>总体 标记-整理，region之间，标记-复制，–不会产生内存碎片</p>
-<p>缺点：</p>
+<p><strong>缺点</strong>：</p>
 <ul>
 <li>垃圾回收的内（卡表）存占用大</li>
 <li>程序运行的额外执行负载高：写后屏障维护卡表，STAB写前屏障跟踪并发指针变化。类似消息队列的结构，存储写前/后屏障，异步处理。</li>
@@ -708,12 +732,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="prev" title="内存区域与溢出异常">
-      <i class="fa fa-chevron-left"></i> 内存区域与溢出异常
+    <a href="/2020/04/05/java/jvm/ClassLoader/" rel="prev" title="JVM--类加载机制">
+      <i class="fa fa-chevron-left"></i> JVM--类加载机制
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/04/05/java/jvm/ClassLoader/" rel="next" title="类加载机制">
-      类加载机制 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/05/code/leecode/eggs877/" rel="next" title="leecode - 877鸡蛋掉落问题">
+      leecode - 877鸡蛋掉落问题 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -774,7 +798,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾收集器与内存分配策略"><span class="nav-number">1.</span> <span class="nav-text">垃圾收集器与内存分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#判定对象已死：垃圾收集器的第一步"><span class="nav-number">1.1.</span> <span class="nav-text">判定对象已死：垃圾收集器的第一步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数算法Reference-Counting"><span class="nav-number">1.1.1.</span> <span class="nav-text">引用计数算法Reference Counting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可达性分析算法-Reachability-Analysis"><span class="nav-number">1.1.2.</span> <span class="nav-text">可达性分析算法 Reachability Analysis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java的引用类型"><span class="nav-number">1.1.3.</span> <span class="nav-text">java的引用类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java对象生存期"><span class="nav-number">1.1.4.</span> <span class="nav-text">java对象生存期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回收方法区"><span class="nav-number">1.1.5.</span> <span class="nav-text">回收方法区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记清除算法"><span class="nav-number">1.2.</span> <span class="nav-text">标记清除算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记复制算法：新生代的回收算法"><span class="nav-number">1.3.</span> <span class="nav-text">标记复制算法：新生代的回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Appel式回收"><span class="nav-number">1.3.1.</span> <span class="nav-text">Appel式回收</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hotspot实现细节"><span class="nav-number">2.</span> <span class="nav-text">hotspot实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根节点枚举GC-Roots"><span class="nav-number">2.1.</span> <span class="nav-text">根节点枚举GC Roots</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全点"><span class="nav-number">2.2.</span> <span class="nav-text">安全点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全区域"><span class="nav-number">2.3.</span> <span class="nav-text">安全区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#记忆集与卡表（跨界引用问题）"><span class="nav-number">2.4.</span> <span class="nav-text">记忆集与卡表（跨界引用问题）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写屏障"><span class="nav-number">2.5.</span> <span class="nav-text">写屏障</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并行的可达性分析"><span class="nav-number">2.6.</span> <span class="nav-text">并行的可达性分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典的垃圾回收器"><span class="nav-number">3.</span> <span class="nav-text">经典的垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial收集器"><span class="nav-number">3.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParNew收集器"><span class="nav-number">3.2.</span> <span class="nav-text">ParNew收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Scavenge收集器"><span class="nav-number">3.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-Old收集器–Old"><span class="nav-number">3.4.</span> <span class="nav-text">Serial Old收集器–Old</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMS于G1比较"><span class="nav-number">4.</span> <span class="nav-text">CMS于G1比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS收集器-Concurrent-Mark-Sweep-Old"><span class="nav-number">4.1.</span> <span class="nav-text">CMS收集器 Concurrent Mark Sweep Old</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Garbage-First收集器-young-old"><span class="nav-number">4.2.</span> <span class="nav-text">Garbage First收集器 young+old</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#低延迟垃圾收集器"><span class="nav-number">5.</span> <span class="nav-text">低延迟垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shenandoah收集器"><span class="nav-number">5.1.</span> <span class="nav-text">Shenandoah收集器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选择合适的收集器"><span class="nav-number">6.</span> <span class="nav-text">选择合适的收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调优方法"><span class="nav-number">7.</span> <span class="nav-text">调优方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">7.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jvm常用命令行参数"><span class="nav-number">7.2.</span> <span class="nav-text">jvm常用命令行参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU跑满"><span class="nav-number">7.3.</span> <span class="nav-text">CPU跑满</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Full-GC"><span class="nav-number">7.3.1.</span> <span class="nav-text">Full GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死循环"><span class="nav-number">7.3.2.</span> <span class="nav-text">死循环</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾收集器与内存分配策略"><span class="nav-number">1.</span> <span class="nav-text">垃圾收集器与内存分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#判定对象已死：垃圾收集器的第一步"><span class="nav-number">1.1.</span> <span class="nav-text">判定对象已死：垃圾收集器的第一步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引用计数算法Reference-Counting"><span class="nav-number">1.1.1.</span> <span class="nav-text">引用计数算法Reference Counting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可达性分析算法-Reachability-Analysis"><span class="nav-number">1.1.2.</span> <span class="nav-text">可达性分析算法 Reachability Analysis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java的引用类型"><span class="nav-number">1.1.3.</span> <span class="nav-text">java的引用类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#java对象生存期"><span class="nav-number">1.1.4.</span> <span class="nav-text">java对象生存期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回收方法区"><span class="nav-number">1.1.5.</span> <span class="nav-text">回收方法区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新生代：标记复制"><span class="nav-number">1.1.6.</span> <span class="nav-text">新生代：标记复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#老年代：标记-整理"><span class="nav-number">1.1.7.</span> <span class="nav-text">老年代：标记-整理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记清除算法"><span class="nav-number">1.2.</span> <span class="nav-text">标记清除算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标记复制算法：新生代的回收算法"><span class="nav-number">1.3.</span> <span class="nav-text">标记复制算法：新生代的回收算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Appel式回收"><span class="nav-number">1.3.1.</span> <span class="nav-text">Appel式回收</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hotspot实现细节"><span class="nav-number">2.</span> <span class="nav-text">hotspot实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根节点枚举GC-Roots"><span class="nav-number">2.1.</span> <span class="nav-text">根节点枚举GC Roots</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全点"><span class="nav-number">2.2.</span> <span class="nav-text">安全点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全区域"><span class="nav-number">2.3.</span> <span class="nav-text">安全区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#记忆集与卡表（跨界引用问题）"><span class="nav-number">2.4.</span> <span class="nav-text">记忆集与卡表（跨界引用问题）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GCRoot并行的可达性分析"><span class="nav-number">2.5.</span> <span class="nav-text">GCRoot并行的可达性分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#经典的垃圾回收器"><span class="nav-number">3.</span> <span class="nav-text">经典的垃圾回收器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial收集器"><span class="nav-number">3.1.</span> <span class="nav-text">Serial收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParNew收集器"><span class="nav-number">3.2.</span> <span class="nav-text">ParNew收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Scavenge收集器"><span class="nav-number">3.3.</span> <span class="nav-text">Parallel Scavenge收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-Old收集器–Old"><span class="nav-number">3.4.</span> <span class="nav-text">Serial Old收集器–Old</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMS于G1比较"><span class="nav-number">4.</span> <span class="nav-text">CMS于G1比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS收集器-Concurrent-Mark-Sweep-Old"><span class="nav-number">4.1.</span> <span class="nav-text">CMS收集器 Concurrent Mark Sweep Old</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Garbage-First收集器-young-old"><span class="nav-number">4.2.</span> <span class="nav-text">Garbage First收集器 young+old</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#低延迟垃圾收集器"><span class="nav-number">5.</span> <span class="nav-text">低延迟垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shenandoah收集器"><span class="nav-number">5.1.</span> <span class="nav-text">Shenandoah收集器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选择合适的收集器"><span class="nav-number">6.</span> <span class="nav-text">选择合适的收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调优方法"><span class="nav-number">7.</span> <span class="nav-text">调优方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">7.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jvm常用命令行参数"><span class="nav-number">7.2.</span> <span class="nav-text">jvm常用命令行参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU跑满"><span class="nav-number">7.3.</span> <span class="nav-text">CPU跑满</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Full-GC"><span class="nav-number">7.3.1.</span> <span class="nav-text">Full GC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#死循环"><span class="nav-number">7.3.2.</span> <span class="nav-text">死循环</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -797,13 +821,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -847,14 +871,14 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">105k</span>
+    <span title="站点总字数">144k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:35</span>
+    <span title="站点阅读时长">2:11</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
 
         
