@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.fkyang.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.1 因特网 具体构成：基本硬件+软件组件 联网基础设施：为分布式应用提供服务的联网基础设施  1.1.1 具体构成主机（host） 或  端系统（end system） 端系统通过 通信链路（communication link） 和分组交换机（packet switch）连接在一起 分组：发送端系统将  数据分段 加上首部字节  的产物  传输速率：比特&#x2F;秒  bit&#x2F;s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="network-internet">
+<meta property="og:url" content="http://blog.fkyang.com/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/index.html">
+<meta property="og:site_name" content="白苏的GitHub个人主页">
+<meta property="og:description" content="1.1 因特网 具体构成：基本硬件+软件组件 联网基础设施：为分布式应用提供服务的联网基础设施  1.1.1 具体构成主机（host） 或  端系统（end system） 端系统通过 通信链路（communication link） 和分组交换机（packet switch）连接在一起 分组：发送端系统将  数据分段 加上首部字节  的产物  传输速率：比特&#x2F;秒  bit&#x2F;s">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-23T00:55:19.000Z">
+<meta property="article:modified_time" content="2024-07-05T05:21:28.234Z">
+<meta property="article:author" content="fkY">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.fkyang.com/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>network-internet | 白苏的GitHub个人主页</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白苏的GitHub个人主页</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">编程之路</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.fkyang.com/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          network-internet
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 08:55:19" itemprop="dateCreated datePublished" datetime="2020-04-23T08:55:19+08:00">2020-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-05 13:21:28" itemprop="dateModified" datetime="2024-07-05T13:21:28+08:00">2024-07-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-1-因特网"><a href="#1-1-因特网" class="headerlink" title="1.1 因特网"></a>1.1 因特网</h2><ul>
+<li>具体构成：基本硬件+软件组件</li>
+<li>联网基础设施：为分布式应用提供服务的联网基础设施<!--mroe--></li>
+</ul>
+<h3 id="1-1-1-具体构成"><a href="#1-1-1-具体构成" class="headerlink" title="1.1.1 具体构成"></a>1.1.1 具体构成</h3><p><strong>主机（host） 或  端系统（end system）</strong></p>
+<p>端系统通过 通信链路（communication link） 和分组交换机（packet switch）连接在一起</p>
+<p><strong>分组</strong>：发送端系统将  数据分段 加上首部字节  的产物</p>
+<blockquote>
+<p>传输速率：比特&#x2F;秒  bit&#x2F;s  bps</p>
+</blockquote>
+<p><strong>分组交换机</strong>：</p>
+<ol>
+<li>路由器：通常用于网络核心</li>
+<li>链路层交换机：通常用于接入网中</li>
+</ol>
+<blockquote>
+<p>路径route &#x2F;path：分组经历的一系列通信链路和分组交换机，成为通过该网络的路径</p>
+</blockquote>
+<p><strong>ISP</strong> 因特网服务提供商Internet Service Provider：一个由多个分组交换机和多段通信网络组成的网络，为端系统提供网络接入。</p>
+<blockquote>
+<p>底层的ISP通过高层的ISP互联，高层ISP通过高速光纤链路互联。</p>
+</blockquote>
+<p>协议Protocol：控制因特网中信息的接受与传送。</p>
+<p>TCP Transmission Control Protocol：传输控制协议</p>
+<p>IP Internet Protocol：网际协议，定义了路由器和端系统之间发送和接收的分组格式</p>
+<h3 id="1-1-2-服务描述"><a href="#1-1-2-服务描述" class="headerlink" title="1.1.2 服务描述"></a>1.1.2 服务描述</h3><p>服务描述：从应用程序提供服务的基础设施描述因特网。应用程序，运行在端系统上。</p>
+<p>分布式应用程序 Distributed Application：涉及多台相互交换数据的端系统</p>
+<p>端系统提供了 应用程序编程接口API  Application Programming Interface。</p>
+<p><strong>API</strong>：规定了一个在端系统上的<em>软件</em>  请求因特网基础设施向 运行在另一个端系统特定目的软件 交付数据  的方式。</p>
+<h3 id="1-1-3-协议"><a href="#1-1-3-协议" class="headerlink" title="1.1.3 协议"></a>1.1.3 协议</h3><p><strong>协议</strong>：定义了两个或多个通信实体之间交换的<strong>报文格式和次序</strong>，以及报文发送&#x2F;接收 或其他事件所采取的<strong>动作</strong></p>
+<h2 id="1-2-网络边缘"><a href="#1-2-网络边缘" class="headerlink" title="1.2 网络边缘"></a>1.2 网络边缘</h2><p>端系统：处于因特网的边缘</p>
+<p>主机：运行应用程序。	客户&#x2F;服务器</p>
+<h3 id="1-2-1-接入网-Access-Network"><a href="#1-2-1-接入网-Access-Network" class="headerlink" title="1.2.1 接入网 Access Network"></a>1.2.1 接入网 Access Network</h3><p><em><strong>接入网</strong></em>：将端系统连接到其 边缘路由器 edge router 的 <strong>物理链路</strong>。</p>
+<blockquote>
+<p>边缘路由器：端系统到其他端系统 <em>路径</em> 上的第一台路由器</p>
+</blockquote>
+<ol>
+<li>家庭接入：DSL,电缆，FTTH，拨号卫星</li>
+</ol>
+<ul>
+<li><p>DSL Digital Subscriber Line：数字用户线，DSL调制解调器</p>
+<p>从提供本地电话接入的本地电话公司处获得DSL因特网接入。 通过频分复用，使得电话和网络可以同时共享链路</p>
+</li>
+<li><p>电缆因特网接入：利用了有线电视现有的有线电视基础设施。电缆调制解调器cable modem</p>
+</li>
+<li><p>FTTH fuber To The Home:光纤到户</p>
+</li>
+</ul>
+<ol start="2">
+<li>企业&#x2F;家庭接入：以太网，wifi</li>
+</ol>
+<ul>
+<li><p>通过LAN局域网接入到边缘路由器。</p>
+</li>
+<li><p>无限LAN环境，无限用户从一个接入点收发数据，接入点与ISP相连</p>
+</li>
+</ul>
+<ol start="3">
+<li>广域无线网接入：3G,LTE</li>
+</ol>
+<h3 id="1-2-2-物理媒体"><a href="#1-2-2-物理媒体" class="headerlink" title="1.2.2 物理媒体"></a>1.2.2 物理媒体</h3><p>网络接入技术对应的物理媒体</p>
+<ul>
+<li>导引型媒体：电波沿着固体媒体前行，光缆，双绞铜线，同轴电缆</li>
+<li>非导引型媒体：电波在空气或外层空间传播，无线局域网，数字卫星频道</li>
+</ul>
+<ol>
+<li>双绞铜线</li>
+</ol>
+<p>最便宜且使用最普遍的引导性媒体</p>
+<ol start="2">
+<li>同轴电缆：</li>
+<li>光纤：每个脉冲一个比特，长途引导型传输媒体</li>
+<li>陆地无线电信道</li>
+<li>卫星无线电信道</li>
+</ol>
+<h2 id="1-3-网络核心"><a href="#1-3-网络核心" class="headerlink" title="1.3 网络核心"></a>1.3 网络核心</h2><p>网络核心：分组交换机+链路构成的网状网络</p>
+<h3 id="1-3-1-分组交换"><a href="#1-3-1-分组交换" class="headerlink" title="1.3.1 分组交换"></a>1.3.1 分组交换</h3><ol>
+<li>存储转发传输：交换机在向输出链路传输该分组的第一个比特之前，必须接收到整个分组</li>
+</ol>
+<p>N条速率为R的链路组成的路径（有N-1个路由器），端到端时延：$d_{端到端} &#x3D; N \frac{L}{R}$</p>
+<ol start="2">
+<li>排队时延和分组丢失</li>
+</ol>
+<p>原因：每个分组机有多条链路与之相连，对于每条相连的链路，具有一个输出缓存（输出队列）。若到达的分组需要传输到某条链路上，但发现该链路正忙于传输其他分组，则该分组在输出队列中等待。</p>
+<p>排队时延：等待的时长。</p>
+<p>分组丢失：队列已满，仍往里添加分组</p>
+<ol start="3">
+<li>转发表和路由选择协议</li>
+</ol>
+<p>转发表：将目的IP地址映射为输出链路</p>
+<p>路由选择协议：自动设置转发表</p>
+<h3 id="1-3-2-电路交换"><a href="#1-3-2-电路交换" class="headerlink" title="1.3.2 电路交换"></a>1.3.2 电路交换</h3><p>通过网络链路和交换机移动数据有两种基本方法：电路交换+分组交换</p>
+<p>电路交换：电路交换网络中，在端系统通信期间，预留了端系统通信沿路径所需要的资源（缓存，链路传输速率）</p>
+<p>传统的电话网络：电路交换网络。</p>
+<ol>
+<li>电路交换网络中的<strong>复用</strong></li>
+</ol>
+<p><strong>频分复用FDM</strong>：频谱由所有链接共享，</p>
+<blockquote>
+<p>连接期间–每个连接专用一个频段，频段的宽度—带宽</p>
+</blockquote>
+<p><strong>时分复用TDM</strong>：时间被划分为固定区间的帧，每个帧划分为时隙。</p>
+<blockquote>
+<p>连接期间，为连接在帧中划分一个时隙，该时隙专门由此连接使用</p>
+<p>传输速率：帧速率*一个时隙中的比特数量</p>
+</blockquote>
+<h3 id="分组和电路的区别"><a href="#分组和电路的区别" class="headerlink" title="分组和电路的区别"></a>分组和电路的区别</h3><p>分组优点：更好的带宽共享，简单有效，成本低</p>
+<blockquote>
+<p>有效：使用网络的时间频度不在一起，相当于用户专享链路。时间局部性</p>
+</blockquote>
+<p>分组缺点：端到端时延是不可变且不可预测的</p>
+<h3 id="1-3-3-网络的网络"><a href="#1-3-3-网络的网络" class="headerlink" title="1.3.3 网络的网络"></a>1.3.3 网络的网络</h3><p>接入ISP自身必须互联，网络的网络</p>
+<p>网络结构1：单一的全球承载ISP互联所有接入ISP</p>
+<p>网络结构2：数十万接入SP+多个全球承载ISP</p>
+<p>网络结构3：接入ISP与区域ISP相连，区域ISP与第一级ISP相连。</p>
+<p>网络结构4：接入ISP，区域ISP，第一层ISP，PoP，多宿，对等，IXP（因特网交换点）组成</p>
+<p>网络结构5：4+内容提供商网络</p>
+<h2 id="1-4-分组交换的时延。丢包，吞吐量"><a href="#1-4-分组交换的时延。丢包，吞吐量" class="headerlink" title="1.4 分组交换的时延。丢包，吞吐量"></a>1.4 分组交换的时延。丢包，吞吐量</h2><p>吞吐量：每秒能够传送的数据量</p>
+<h3 id="1-4-1-节点时延概述"><a href="#1-4-1-节点时延概述" class="headerlink" title="1.4.1 节点时延概述"></a>1.4.1 节点时延概述</h3><p>节点总时延 &#x3D; 节点处理时延+排队时延+传输时延+传播时延</p>
+<p>节点处理时延：检查分组首部，决定该分组导向何处所需要的时间（主要）+ 差错检测等</p>
+<p>排队时延：在链路上等待传输的时延</p>
+<p>传输时延：L&#x2F;R  L：分组比特数，R：传输速率</p>
+<p>传播时延：物理媒体，d&#x2F;s  d：长度，s：传播速率</p>
+<h3 id="1-4-2-排队时延和丢包"><a href="#1-4-2-排队时延和丢包" class="headerlink" title="1.4.2 排队时延和丢包"></a>1.4.2 排队时延和丢包</h3><p>a：分组到达队列的平均速率，pkt&#x2F;s</p>
+<p>La：比特到达队列的平均速率，La  bps</p>
+<p>R：传输速率，从队列中推出比特的速率，bps，b&#x2F;s</p>
+<p>La&#x2F;R：流量强度：设计系统时候，流量强度不能超过一</p>
+<blockquote>
+<p>流量强度：in 比特 与  MAXout 比特的比值</p>
+</blockquote>
+<p>丢包：分组交换机  链路的缓存队列已满，没有地方存储这个分组，产生丢包，分组被丢弃</p>
+<h3 id="1-4-3-端到端时延"><a href="#1-4-3-端到端时延" class="headerlink" title="1.4.3 端到端时延"></a>1.4.3 端到端时延</h3><p>N条速率为R的链路组成的路径（有N-1个路由器），</p>
+<p>$d_{end-end} &#x3D; N ( d_{proc} + d_{trans} + d_{prop})$</p>
+<p>端系统，应用程序+其他时延：</p>
+<h3 id="1-4-4-计算机网络中的吞吐量"><a href="#1-4-4-计算机网络中的吞吐量" class="headerlink" title="1.4.4 计算机网络中的吞吐量"></a>1.4.4 计算机网络中的吞吐量</h3><p>瞬时吞吐量：主机接收文件的速率</p>
+<p>平均吞吐量：F&#x2F;T</p>
+<p>瓶颈链路：路径中的最小传输速率</p>
+<h2 id="1-5-协议层次及其服务模型"><a href="#1-5-协议层次及其服务模型" class="headerlink" title="1.5 协议层次及其服务模型"></a>1.5 协议层次及其服务模型</h2><p>分层：改变服务的实现不影响其他系统组件</p>
+<ol>
+<li>协议分层</li>
+</ol>
+<p>分层的方式组织协议以及实现。</p>
+<p>某层向上一层提供服务。</p>
+<p>协议层的实现：软件+硬件</p>
+<p>缺点：</p>
+<ol>
+<li>冗余底层的功能</li>
+<li>某层的功能可能需要其他层的信息</li>
+</ol>
+<p>协议栈：物理层，链路层，网络层，运输层，应用层</p>
+<ul>
+<li>应用层：网络应用程序及应用层协议存留的地方，<ul>
+<li>HTTP（web）,FTP(电子邮件),SMTP(文件)</li>
+<li>部署在多个端系统上</li>
+<li><strong>报文 message</strong></li>
+</ul>
+</li>
+<li>运输层：应用<strong>程序端点</strong>之间传送应用层报文<ul>
+<li>TCP(连接，可靠，拥塞控制，流量控制),UDP（不可靠）</li>
+<li><strong>报文段 segment</strong>  &#x3D; 运输层首部信息+报文</li>
+</ul>
+</li>
+<li>网络层：将<strong>数据报</strong>从一台<em>主机</em>移动到另一台主机<ul>
+<li>IP协议，路由选择协议</li>
+<li>运输层向网络层提供报文段+目的地址</li>
+<li><strong>数据报 datagram</strong> &#x3D; 网络层首部信息 + 报文段</li>
+</ul>
+</li>
+<li>链路层：链路层沿着路径把<strong>数据报</strong>传递给下一个节点<ul>
+<li>链路层的服务决定链路层的协议，</li>
+<li>**帧 frame **   &#x3D; 链路层首部信息 +  数据报</li>
+</ul>
+</li>
+<li>物理层：把帧的一个个<strong>比特</strong>从一个节点移动到下一个节点<ul>
+<li><strong>比特 byte</strong></li>
+</ul>
+</li>
+</ul>
+<p>OSI模型：</p>
+<p>应用层，表示层，会话层，运输层，网络层，数据链路层，物理层</p>
+<p>表示层：应用程序能够解释交换数据的含义，数据压缩&#x2F;解密&#x2F;描述</p>
+<p>会话层：数据交换定界和同步功能，建立检查点，恢复方案等</p>
+<p>链路交换机：一，二层</p>
+<p>路由器：一到三层</p>
+<h2 id="1-6-面对攻击的网络"><a href="#1-6-面对攻击的网络" class="headerlink" title="1.6 面对攻击的网络"></a>1.6 面对攻击的网络</h2><p>病毒：需要用户交互的恶意软件</p>
+<p>蠕虫：不需要交互的恶意软件</p>
+<p>DOS-Denial Of Service：拒绝服务攻击</p>
+<ul>
+<li>弱点攻击：精细的报文</li>
+<li>带宽泛洪：大量的分组</li>
+<li>连接洪泛：大量半开&#x2F;全开  TCP连接</li>
+</ul>
+<p>分布式DOS：控制多个源，并让每个源向目标发送流量</p>
+<p>分组嗅探器</p>
+<p>IP哄骗</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/21/linux/linuxStudy/" rel="prev" title="linux学习笔记">
+      <i class="fa fa-chevron-left"></i> linux学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/" rel="next" title="network-web">
+      network-web <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%9B%A0%E7%89%B9%E7%BD%91"><span class="nav-number">1.</span> <span class="nav-text">1.1 因特网</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-%E5%85%B7%E4%BD%93%E6%9E%84%E6%88%90"><span class="nav-number">1.1.</span> <span class="nav-text">1.1.1 具体构成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E6%9C%8D%E5%8A%A1%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.2.</span> <span class="nav-text">1.1.2 服务描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.3.</span> <span class="nav-text">1.1.3 协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E7%BD%91%E7%BB%9C%E8%BE%B9%E7%BC%98"><span class="nav-number">2.</span> <span class="nav-text">1.2 网络边缘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-%E6%8E%A5%E5%85%A5%E7%BD%91-Access-Network"><span class="nav-number">2.1.</span> <span class="nav-text">1.2.1 接入网 Access Network</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-%E7%89%A9%E7%90%86%E5%AA%92%E4%BD%93"><span class="nav-number">2.2.</span> <span class="nav-text">1.2.2 物理媒体</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E7%BD%91%E7%BB%9C%E6%A0%B8%E5%BF%83"><span class="nav-number">3.</span> <span class="nav-text">1.3 网络核心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2"><span class="nav-number">3.1.</span> <span class="nav-text">1.3.1 分组交换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-%E7%94%B5%E8%B7%AF%E4%BA%A4%E6%8D%A2"><span class="nav-number">3.2.</span> <span class="nav-text">1.3.2 电路交换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E5%92%8C%E7%94%B5%E8%B7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.3.</span> <span class="nav-text">分组和电路的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-%E7%BD%91%E7%BB%9C%E7%9A%84%E7%BD%91%E7%BB%9C"><span class="nav-number">3.4.</span> <span class="nav-text">1.3.3 网络的网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E5%88%86%E7%BB%84%E4%BA%A4%E6%8D%A2%E7%9A%84%E6%97%B6%E5%BB%B6%E3%80%82%E4%B8%A2%E5%8C%85%EF%BC%8C%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-number">4.</span> <span class="nav-text">1.4 分组交换的时延。丢包，吞吐量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-%E8%8A%82%E7%82%B9%E6%97%B6%E5%BB%B6%E6%A6%82%E8%BF%B0"><span class="nav-number">4.1.</span> <span class="nav-text">1.4.1 节点时延概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-%E6%8E%92%E9%98%9F%E6%97%B6%E5%BB%B6%E5%92%8C%E4%B8%A2%E5%8C%85"><span class="nav-number">4.2.</span> <span class="nav-text">1.4.2 排队时延和丢包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-3-%E7%AB%AF%E5%88%B0%E7%AB%AF%E6%97%B6%E5%BB%B6"><span class="nav-number">4.3.</span> <span class="nav-text">1.4.3 端到端时延</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-4-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%9A%84%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-number">4.4.</span> <span class="nav-text">1.4.4 计算机网络中的吞吐量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E5%8D%8F%E8%AE%AE%E5%B1%82%E6%AC%A1%E5%8F%8A%E5%85%B6%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%9E%8B"><span class="nav-number">5.</span> <span class="nav-text">1.5 协议层次及其服务模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E9%9D%A2%E5%AF%B9%E6%94%BB%E5%87%BB%E7%9A%84%E7%BD%91%E7%BB%9C"><span class="nav-number">6.</span> <span class="nav-text">1.6 面对攻击的网络</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fkY"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">fkY</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fkYang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fkYang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fukai.yang@foxmail.com" title="E-Mail → mailto:fukai.yang@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fkY</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">158k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:24</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'y975d4MYQCK4R503CH0OprtL',
+      appKey     : 'p6FKpeXQK0zqjyjAprd58ShD',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

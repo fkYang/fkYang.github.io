@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.fkyang.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2.1 应用层协议原理网络应用程序：运行在不同端系统，通过网络彼此通信的程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="network-web">
+<meta property="og:url" content="http://blog.fkyang.com/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/index.html">
+<meta property="og:site_name" content="白苏的GitHub个人主页">
+<meta property="og:description" content="2.1 应用层协议原理网络应用程序：运行在不同端系统，通过网络彼此通信的程序">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-23T00:55:19.000Z">
+<meta property="article:modified_time" content="2024-07-05T05:21:22.409Z">
+<meta property="article:author" content="fkY">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.fkyang.com/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>network-web | 白苏的GitHub个人主页</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白苏的GitHub个人主页</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">编程之路</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.fkyang.com/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          network-web
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 08:55:19" itemprop="dateCreated datePublished" datetime="2020-04-23T08:55:19+08:00">2020-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-05 13:21:22" itemprop="dateModified" datetime="2024-07-05T13:21:22+08:00">2024-07-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/23/internet/chapterTwo%E5%BA%94%E7%94%A8%E5%B1%82/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="2-1-应用层协议原理"><a href="#2-1-应用层协议原理" class="headerlink" title="2.1 应用层协议原理"></a>2.1 应用层协议原理</h2><p>网络应用程序：运行在不同端系统，通过网络彼此通信的程序</p>
+<span id="more"></span>
+
+<h3 id="２-１-１-网络应用程序体系结构"><a href="#２-１-１-网络应用程序体系结构" class="headerlink" title="２.１.１　网络应用程序体系结构"></a>２.１.１　网络应用程序体系结构</h3><ul>
+<li><p>CS客户服务器体系，</p>
+<ul>
+<li>服务器：总是打开的的主机，服务于来自其他称为客户的主机的请求。<ul>
+<li>数据中心，被创建服务器</li>
+</ul>
+</li>
+<li>客户之间不相互通信</li>
+<li>FTP,Web</li>
+</ul>
+</li>
+<li><p>P2P对等体系结构</p>
+<ul>
+<li>主机对之间直接通信，对等方</li>
+<li>自扩展性</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-2-进程通信"><a href="#2-1-2-进程通信" class="headerlink" title="2.1.2 进程通信"></a>2.1.2 进程通信</h3><p>进程通过网络交换报文</p>
+<ol>
+<li>客户和服务器进程</li>
+</ol>
+<p>网络程序由成对的进程组成，一个客户，一个服务器。</p>
+<ul>
+<li>客户：发起通信的进程</li>
+<li>服务器：会话开始时，等待联系的进程</li>
+</ul>
+<ol start="2">
+<li>进程与计算机网络之间的接口</li>
+</ol>
+<p>套接字软件接口：向网络  发送&#x2F;接收 报文</p>
+<p>套接字：应用层与传输层之间的接口，应用程序接口</p>
+<ol start="3">
+<li>进程寻址</li>
+</ol>
+<p>主机地址+接收进程的标识符：IP地址+端口号</p>
+<h3 id="2-1-3-可供应用程序使用的传输服务"><a href="#2-1-3-可供应用程序使用的传输服务" class="headerlink" title="2.1.3 可供应用程序使用的传输服务"></a>2.1.3 可供应用程序使用的传输服务</h3><ol>
+<li>可靠数据传输</li>
+<li>吞吐量</li>
+</ol>
+<blockquote>
+<p> 可用吞吐量：发送进程能够向接收进程交付比特的速率</p>
+<ul>
+<li>带宽敏感的应用：具有吞吐量要求的应用程序</li>
+<li>弹性应用：利用可供使用的吞吐量</li>
+</ul>
+</blockquote>
+<ol start="3">
+<li>定时：提供定时保证</li>
+<li>安全性：安全性服务</li>
+</ol>
+<blockquote>
+<p>机密性（加密），数据完整性，端点鉴别</p>
+</blockquote>
+<h3 id="2-1-4-因特网提供的运输服务"><a href="#2-1-4-因特网提供的运输服务" class="headerlink" title="2.1.4 因特网提供的运输服务"></a>2.1.4 因特网提供的运输服务</h3><ol>
+<li>TCP服务</li>
+</ol>
+<ul>
+<li>面向连接 ；可靠传输 ；拥塞控制</li>
+</ul>
+<blockquote>
+<p>安全套接字层SSL：加强版TCP，额外增加了进程到进程的安全性服务，加密，数据完整性，端点鉴别</p>
+</blockquote>
+<ol start="2">
+<li>UDP服务</li>
+</ol>
+<ul>
+<li>轻量级运输协议：无连接，不可靠</li>
+</ul>
+<h3 id="2-1-5-应用层协议"><a href="#2-1-5-应用层协议" class="headerlink" title="2.1.5 应用层协议"></a>2.1.5 应用层协议</h3><p>应用层协议：定义端系统的应用程序进程如何相互传递报文</p>
+<ul>
+<li>交换的报文类型</li>
+<li>报文类型的语法</li>
+<li>字段的语义</li>
+<li>进程如何，何时发送报文，对报文响应</li>
+</ul>
+<h2 id="2-2-Web-和HTTP"><a href="#2-2-Web-和HTTP" class="headerlink" title="2.2 Web  和HTTP"></a>2.2 Web  和HTTP</h2><p>Web：按需操作</p>
+<h3 id="2-2-1-HTTP概况"><a href="#2-2-1-HTTP概况" class="headerlink" title="2.2.1 HTTP概况"></a>2.2.1 HTTP概况</h3><h4 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h4><p>HTTP URL (URL是一种特殊类型的URI，包含了用于查找某个资源的足够的信息)的格式如下： </p>
+<p><code>[http://host[&quot;:&quot;port\][abs_path](http://host[&quot;&quot;port][abs_path/)]</code></p>
+<p>http表示要通过HTTP协议来定位网络资源  : <code>http:192.168.0.116:8080/index.jsp </code></p>
+<ul>
+<li>host表示合法的Internet主机域名或者IP地址</li>
+<li>port指定一个端口号，为空则使用缺省端口80</li>
+<li>abs_path指定请求资源的URI</li>
+</ul>
+<h4 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h4><p>http请求由三部分组成，分别是：请求行、消息报头、请求正文。</p>
+<ul>
+<li><p>请求行：Method Request-URI HTTP-Version CRLF </p>
+<ul>
+<li><p>Method表示请求方法</p>
+</li>
+<li><p>Request-URI是一个统一资源标识符</p>
+</li>
+<li><p>HTTP-Version表示请求的HTTP协议版本</p>
+</li>
+<li><p>CRLF表示回车和换行（除了作为结尾的CRLF外，不允许出现单独的CR或LF字符）。</p>
+</li>
+<li><table>
+<thead>
+<tr>
+<th>method</th>
+<th>content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>请求获取Request-URI所标识的<strong>资源</strong></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>在Request-URI所标识的资源后附加新的<strong>数据</strong>,<br />被请求服务器接受附在请求后面的数据，常用于提交表单。</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>请求获取由Request-URI所标识的资源的响应消息报头</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>请求服务器存储一个资源，并用Request-URI作为其标识</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>请求服务器删除Request-URI所标识的资源</td>
+</tr>
+<tr>
+<td>TRACE</td>
+<td>请求服务器回送收到的请求信息，主要用于测试或诊断</td>
+</tr>
+<tr>
+<td>CONNECT</td>
+<td>保留将来使用</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>请求查询服务器的性能，或者查询与资源相关的选项和需求</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+<li><p>请求报头</p>
+</li>
+<li><p>请求正文</p>
+</li>
+</ul>
+<h4 id="响应"><a href="#响应" class="headerlink" title="响应"></a>响应</h4><p>HTTP响应也是由三个部分组成，分别是：状态行、消息报头、响应正文</p>
+<ul>
+<li><p>状态行：HTTP-Version Status-Code Reason-Phrase CRLF</p>
+<ul>
+<li><p>HTTP-Version表示服务器HTTP协议的版本</p>
+</li>
+<li><p>Status-Code表示服务器发回的响应状态代码</p>
+</li>
+<li><p>Reason-Phrase表示状态代码的文本描述。</p>
+</li>
+<li><blockquote>
+<p>1xx：指示信息–表示请求已接收，继续处理<br>2xx：成功–表示请求已被成功接收、理解、接受    </p>
+<blockquote>
+<p>200 OK   &#x2F;&#x2F;客户端请求成功</p>
+</blockquote>
+<p>3xx：重定向–要完成请求必须进行更进一步的操作<br>4xx：客户端错误–请求有语法错误或请求无法实现</p>
+<blockquote>
+<p>400 Bad Request &#x2F;&#x2F;客户端请求有语法错误，不能被服务器所理解<br>401 Unauthorized &#x2F;&#x2F;请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用<br>403 Forbidden &#x2F;&#x2F;服务器收到请求，但是拒绝提供服务<br>404 Not Found &#x2F;&#x2F;请求资源不存在，eg：输入了错误的URL</p>
+</blockquote>
+<p>5xx：服务器端错误–服务器未能实现合法的请求</p>
+<blockquote>
+<p>500 Internal Server Error &#x2F;&#x2F;服务器发生不可预期的错误<br>503 Server Unavailable &#x2F;&#x2F;服务器当前不能处理客户端的请求，一段时间后可能恢复正常</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>响应报头</p>
+</li>
+<li><p>响应正文：服务器返回的资源的内容</p>
+</li>
+</ul>
+<h4 id="报头"><a href="#报头" class="headerlink" title="报头"></a>报头</h4><p>消息报头：普通报头、请求报头、响应报头、实体报头。</p>
+<ul>
+<li>报头格式：名字+“：”+空格+值     <ul>
+<li>消息报头域的名字是大小写无关的。</li>
+</ul>
+</li>
+<li>普通：</li>
+<li>请求：客户端向服务器端传递请求的附加信息以及客户端自身的信息。<br>* </li>
+<li>响应：服务器传递不能放在状态行中的附加响应信息，以及关于服务器的信息和对Request-URI所标识的资源进行下一步访问的信息。</li>
+<li>实体：实体报头定义了关于实体正文（eg：有无实体正文）和请求所标识的资源的元信息。</li>
+</ul>
+<p>Web的应用层协议：HTTP–超文本传输协议 HyperText Transfer Protocol，Web的核心</p>
+<p>Web页面（文档）是由对象组成的，一个对象是一个文件，可通过URL地址寻址。</p>
+<p>​								一个Web页面 &#x3D; 一个HTML基本文件+引用对象</p>
+<ul>
+<li>Web浏览器 ： HTTP的客户端</li>
+<li>Web服务器 ： HTTP的服务端，存储Web对象</li>
+</ul>
+<p>应用层协议 – HTTP：客户程序+服务器程序</p>
+<p>HTTP</p>
+<ul>
+<li><p>定义了Web客户向服务器交互的格式。</p>
+</li>
+<li><p>HTML文件通过对象的URL地址引用其他对象。</p>
+<ul>
+<li><blockquote>
+<p>URL：协议+ 服务器名+路径名</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>基于TCP协议。</p>
+</li>
+<li><p>不存储用户的状态信息，无状态协议</p>
+</li>
+</ul>
+<h3 id="2-2-2-非持续连接-和持续连接"><a href="#2-2-2-非持续连接-和持续连接" class="headerlink" title="2.2.2 非持续连接 和持续连接"></a>2.2.2 非持续连接 和持续连接</h3><ul>
+<li>非持续连接：请求&#x2F;响应  经过一个单独的TCP连接发送</li>
+<li>持续链接：请求&#x2F;响应  经过同一个TCP连接发送</li>
+</ul>
+<p>默认。HTTP：持续连接</p>
+<ol>
+<li>非持续连接的HTTP：<ol>
+<li>每次请求一个页面的引用对象，都新开一个TCP连接</li>
+<li>每次TCP连接，只传送一个  请求&#x2F;响应  报文</li>
+</ol>
+</li>
+</ol>
+<p>RTT 往返时间，Round-Trip Time ：从客户到服务器在返回客户所需要的时间。</p>
+<ol start="2">
+<li>持续连接的TCP<ol>
+<li>所有的请求和响应通过一个TCP连接，发送对象的请求，接收；然后请求下一个对象</li>
+<li>流水线的持续连接</li>
+</ol>
+</li>
+</ol>
+<h3 id="2-2-3-HTTP报文格式"><a href="#2-2-3-HTTP报文格式" class="headerlink" title="2.2.3 HTTP报文格式"></a>2.2.3 HTTP报文格式</h3><ol>
+<li>请求报文</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">方法 sp URL sp 版本 cr lf  回车  换行</span><br><span class="line">首部字段名： sp 值 cr lf</span><br><span class="line">。。。</span><br><span class="line">首部字段名： sp 值 cr lf</span><br><span class="line">cr lf</span><br><span class="line">实体主体</span><br><span class="line"></span><br><span class="line">GET /some/1.html HTTP/1.1</span><br><span class="line">Host: www.hello.edu</span><br><span class="line">Connection:close		持续连接？</span><br><span class="line">User-agent:Mozilla/5.0   浏览器的类型</span><br><span class="line">Accept-language:en</span><br><span class="line">						Get方法时，主体为空</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>HTTP响应报文</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">版本 sp 状态码 sp cr lf</span><br><span class="line">首部字段名： sp 值 cr lf</span><br><span class="line">。。。</span><br><span class="line">首部字段名： sp 值 cr lf</span><br><span class="line">cr lf</span><br><span class="line">实体</span><br><span class="line"></span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Connection：close</span><br><span class="line">Date：Tue，09， ....</span><br><span class="line">Server：Apache/2.2.3（CentOS）</span><br><span class="line">Last-Modified：**</span><br><span class="line">Content-Length：**</span><br><span class="line">Content-Type：text/html</span><br><span class="line"></span><br><span class="line">data。。。。。</span><br></pre></td></tr></table></figure>
+
+<p>状态码：</p>
+<ul>
+<li>信息响应(<code>100</code>–<code>199</code>)</li>
+<li>成功响应(<code>200</code>–<code>299</code>)</li>
+<li>重定向(<code>300</code>–<code>399</code>)</li>
+<li>客户端错误(<code>400</code>–<code>499</code>)</li>
+<li>服务器错误 (<code>500</code>–<code>599</code>)</li>
+</ul>
+<h3 id="2-2-4-用户和服务器的交互-：cookie"><a href="#2-2-4-用户和服务器的交互-：cookie" class="headerlink" title="2.2.4 用户和服务器的交互 ：cookie"></a>2.2.4 用户和服务器的交互 ：cookie</h3><p>cookie：四个组件</p>
+<ol>
+<li>HTTP响应的cookie首部行</li>
+<li>HTTP请求的cookie首部行</li>
+<li>用户端系统中，保留一个cookie文件，并由用户的浏览器进行管理</li>
+<li>Web站点的一个后端数据库，</li>
+</ol>
+<p>cookie用于表示一个用户，在无状态连接的HTTP之上建立了一个用户会话层</p>
+<h3 id="2-2-5-Web-缓存"><a href="#2-2-5-Web-缓存" class="headerlink" title="2.2.5 Web 缓存"></a>2.2.5 Web 缓存</h3><p>Web缓存器（Web Cache）– 代理服务器    proxy server：代表初始Web服务器来满足HTTP请求的网络实体</p>
+<p>浏览器请求时，向Web缓存器请求，</p>
+<ul>
+<li>web缓存器持有缓存：返回</li>
+<li>不持有缓存：Web缓存向节点请求，等待返回，缓存，并发送给请求的用户</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>减少对客户请求的响应时间</li>
+<li>减少通信量</li>
+</ul>
+<h3 id="2-2-6-条件GET方法"><a href="#2-2-6-条件GET方法" class="headerlink" title="2.2.6 条件GET方法"></a>2.2.6 条件GET方法</h3><p>条件Get方法：验证持有的对象是否是最新的版本</p>
+<p>请求报文：</p>
+<ul>
+<li>请求报文，Get方法</li>
+<li>首部包含：If-Modified-Since，字段</li>
+</ul>
+<p>响应报文：</p>
+<ul>
+<li>是最新， not modified，空报文体</li>
+<li>不是最新，返回对象</li>
+</ul>
+<h2 id="2-3-FTP，文件传输协议"><a href="#2-3-FTP，文件传输协议" class="headerlink" title="2.3 FTP，文件传输协议"></a>2.3 FTP，文件传输协议</h2><p>FTP用户代理，用户提供远程主机名，建立TCP连接，提供用户标识+口令，若用户被授权，用户可以进行本地文件与远程文件系统的上传下载。</p>
+<ul>
+<li><p>两个并行的TCP连接来传输文件</p>
+<ul>
+<li>控制连接 端口 21：传输控制信息，用户标识，口令，put&#x2F;get 文件 等命令<ul>
+<li>持续连接</li>
+</ul>
+</li>
+<li>数据连接 端口 20：实际传输文件<ul>
+<li>非持续连接</li>
+</ul>
+</li>
+</ul>
+<p>FTP的控制信息是带外传输的。</p>
+<p>HTTP带内传输控制信息</p>
+</li>
+</ul>
+<p>FTP保存用户状态，连接用户账户-控制连接</p>
+<p>FTP的命令和回答</p>
+<p>命令：7比特的ASCII格式传输。</p>
+<ul>
+<li>USER username：用户名</li>
+<li>PASS password：口令</li>
+<li>LIST：文件列表</li>
+<li>RETR filename：get文件</li>
+<li>STOR filename：put文件</li>
+</ul>
+<h2 id="2-4-电子邮件"><a href="#2-4-电子邮件" class="headerlink" title="2.4 电子邮件"></a>2.4 电子邮件</h2><p>电子邮件：异步通信媒介</p>
+<p>组成成分：</p>
+<ol>
+<li>用户代理：</li>
+<li>邮件服务器：</li>
+<li>简单邮件传输协议 SMTP：</li>
+</ol>
+<h3 id="2-4-1-SMTP"><a href="#2-4-1-SMTP" class="headerlink" title="2.4.1 SMTP"></a>2.4.1 SMTP</h3><p>SMTP是因特网电子邮件协议应用的核心。基于TCP协议，持续连接</p>
+<p>A写邮件，发送给B：</p>
+<p>A写邮件，并提供B的邮件地址，发送邮件，邮件发送到A的邮件服务器的报文队列上，A的SMTP客户端建立一个到B的SMTP服务器的TCP连接，通过TCP连接发送邮件报文。B的邮件服务器接收报文，放入B的邮箱。</p>
+<h3 id="2-4-2-HTTP与SMTP对比"><a href="#2-4-2-HTTP与SMTP对比" class="headerlink" title="2.4.2 HTTP与SMTP对比"></a>2.4.2 HTTP与SMTP对比</h3><ul>
+<li>HTTP：拉协议，用户从服务器拉去信息</li>
+<li>SMTP：堆协议，邮箱服务器向 另一个 邮件服务器 推送 信息<ul>
+<li>编码格式：	SMTP必须7比特的ASCII编码，HTTP无约束</li>
+</ul>
+</li>
+<li>对象内容：<ul>
+<li>SMTP:一个对象</li>
+<li>HTTP：每个分属不同的对象</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-4-邮件访问协议"><a href="#2-4-4-邮件访问协议" class="headerlink" title="2.4.4 邮件访问协议"></a>2.4.4 邮件访问协议</h3><ol>
+<li>POP3</li>
+</ol>
+<ul>
+<li>特许：用户发送用户名+口令来鉴别用户<ul>
+<li>user+pass</li>
+</ul>
+</li>
+<li>事务处理：用户取回，删除，统计报文信息<ul>
+<li>list+retr+dele+，quie</li>
+</ul>
+</li>
+<li>更新：结束POP会话</li>
+</ul>
+<ol start="2">
+<li><p>IMAP</p>
+<ul>
+<li>一个报文就是一个文件夹，创建&#x2F;移动 文件夹，查询邮件</li>
+<li>允许用户查看部分报文。</li>
+</ul>
+</li>
+<li><p>基于Web的电子邮件</p>
+<ul>
+<li>用户和邮箱通信通过HTTP协议进行。</li>
+<li>浏览器—–（http） —-邮件服务器—–（SMTP）——-邮件服务器——（HTTP）——浏览器</li>
+</ul>
+</li>
+</ol>
+<h2 id="2-5-DNS-因特网的目录服务"><a href="#2-5-DNS-因特网的目录服务" class="headerlink" title="2.5 DNS 因特网的目录服务"></a>2.5 DNS 因特网的目录服务</h2><p>识别主机的方式：1.主机名		2.IP地址 </p>
+<h3 id="2-5-1-DNS提供的服务"><a href="#2-5-1-DNS提供的服务" class="headerlink" title="2.5.1 DNS提供的服务"></a>2.5.1 DNS提供的服务</h3><p>主机名 与 ip地址  之间的转换</p>
+<p>DNS Domian Name System：分层的DNS服务器（数据库），主机能够查询分布式数据库的应用层协议</p>
+<ul>
+<li>主机别名：</li>
+<li>邮件服务器别名：MX</li>
+<li>负载分配：IP地址集合–  规范的主机名</li>
+</ul>
+<h3 id="2-5-2-工作原理"><a href="#2-5-2-工作原理" class="headerlink" title="2.5.2 工作原理"></a>2.5.2 工作原理</h3><p>用户的DNS客户端发送DNS查询报文，基于UDP协议经过端口53发送，接收到DNS回答报文，获得IP地址</p>
+<ol>
+<li><p>分布式层次数据库</p>
+<ul>
+<li>根DNS服务器</li>
+<li>顶级域DNS服务器</li>
+<li>权威DNS服务器</li>
+</ul>
+<p>本地DNS</p>
+<p>递归查询：请求，获得最终结果</p>
+<p>迭代查询：请求，获得结果，再根据结果查询</p>
+</li>
+<li><p>DNS缓存</p>
+<p>缓存查询的信息，减少向根&#x2F;顶级等DNS发送查询的报文数</p>
+</li>
+</ol>
+<h3 id="2-5-3-DNS记录和报文"><a href="#2-5-3-DNS记录和报文" class="headerlink" title="2.5.3 DNS记录和报文"></a>2.5.3 DNS记录和报文</h3><p>资源记录 Resource Record：主机名到IP地址的映射</p>
+<blockquote>
+<p>(Name,Value,Type,TTL)</p>
+<p>type:</p>
+<ul>
+<li>A：name为主机名</li>
+<li>NS：name 为域，value为记录域名的权威DNS服务器</li>
+<li>CNAME: value为别名为Name的主机名</li>
+<li>MX： value为别名为Name的邮件服务器的规范主机名</li>
+</ul>
+</blockquote>
+<p>每个DNS回答包含了 一条 或多条 资源记录</p>
+<ol>
+<li>DNS报文</li>
+<li>往DNS数据库插入数据</li>
+</ol>
+<h2 id="2-6-P2P应用"><a href="#2-6-P2P应用" class="headerlink" title="2.6 P2P应用"></a>2.6 P2P应用</h2><p>p2p 彼此直接通信</p>
+<h3 id="2-6-1-P2P-文件分发"><a href="#2-6-1-P2P-文件分发" class="headerlink" title="2.6.1 P2P 文件分发"></a>2.6.1 P2P 文件分发</h3><p>P2P文件分发中。每个对等方都能够重新发送自己所拥有的文件</p>
+<h2 id="2-7-TCP套接字编程"><a href="#2-7-TCP套接字编程" class="headerlink" title="2.7 TCP套接字编程"></a>2.7 TCP套接字编程</h2><p>UDP：<strong>显式</strong> 确认 目的地址：目的ip+目的端口号</p>
+<p>在底层，将源地址（ip ） <strong>隐式</strong> 加上</p>
+<p>server：</p>
+<ul>
+<li>UDP：<ul>
+<li>bind，：绑定端口号</li>
+<li>recvfrom：接收分组消息</li>
+</ul>
+</li>
+<li>TCP：<ul>
+<li>bind：绑定端口号</li>
+<li>listen：设置监听状态</li>
+<li>accpet：接收新的连接</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/23/internet/chapterOne%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%92%8C%E5%9B%A0%E7%89%B9%E7%BD%91/" rel="prev" title="network-internet">
+      <i class="fa fa-chevron-left"></i> network-internet
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/internet/chapterThree%E8%BF%90%E8%BE%93%E5%B1%82/" rel="next" title="network-TCP,UDP">
+      network-TCP,UDP <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%BA%94%E7%94%A8%E5%B1%82%E5%8D%8F%E8%AE%AE%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">2.1 应用层协议原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EF%BC%92-%EF%BC%91-%EF%BC%91-%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">２.１.１　网络应用程序体系结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="nav-number">1.2.</span> <span class="nav-text">2.1.2 进程通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-%E5%8F%AF%E4%BE%9B%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E7%9A%84%E4%BC%A0%E8%BE%93%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.3.</span> <span class="nav-text">2.1.3 可供应用程序使用的传输服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4-%E5%9B%A0%E7%89%B9%E7%BD%91%E6%8F%90%E4%BE%9B%E7%9A%84%E8%BF%90%E8%BE%93%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.4.</span> <span class="nav-text">2.1.4 因特网提供的运输服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-5-%E5%BA%94%E7%94%A8%E5%B1%82%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.5.</span> <span class="nav-text">2.1.5 应用层协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Web-%E5%92%8CHTTP"><span class="nav-number">2.</span> <span class="nav-text">2.2 Web  和HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-HTTP%E6%A6%82%E5%86%B5"><span class="nav-number">2.1.</span> <span class="nav-text">2.2.1 HTTP概况</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL"><span class="nav-number">2.1.1.</span> <span class="nav-text">URL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82"><span class="nav-number">2.1.2.</span> <span class="nav-text">请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%93%8D%E5%BA%94"><span class="nav-number">2.1.3.</span> <span class="nav-text">响应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%A5%E5%A4%B4"><span class="nav-number">2.1.4.</span> <span class="nav-text">报头</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-%E9%9D%9E%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5-%E5%92%8C%E6%8C%81%E7%BB%AD%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">2.2.2 非持续连接 和持续连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-HTTP%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">2.2.3 HTTP报文格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-%E7%94%A8%E6%88%B7%E5%92%8C%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E4%BA%A4%E4%BA%92-%EF%BC%9Acookie"><span class="nav-number">2.4.</span> <span class="nav-text">2.2.4 用户和服务器的交互 ：cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-5-Web-%E7%BC%93%E5%AD%98"><span class="nav-number">2.5.</span> <span class="nav-text">2.2.5 Web 缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-6-%E6%9D%A1%E4%BB%B6GET%E6%96%B9%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text">2.2.6 条件GET方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-FTP%EF%BC%8C%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">2.3 FTP，文件传输协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">2.4 电子邮件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-SMTP"><span class="nav-number">4.1.</span> <span class="nav-text">2.4.1 SMTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-HTTP%E4%B8%8ESMTP%E5%AF%B9%E6%AF%94"><span class="nav-number">4.2.</span> <span class="nav-text">2.4.2 HTTP与SMTP对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-4-%E9%82%AE%E4%BB%B6%E8%AE%BF%E9%97%AE%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.3.</span> <span class="nav-text">2.4.4 邮件访问协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-DNS-%E5%9B%A0%E7%89%B9%E7%BD%91%E7%9A%84%E7%9B%AE%E5%BD%95%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">2.5 DNS 因特网的目录服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-DNS%E6%8F%90%E4%BE%9B%E7%9A%84%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.1.</span> <span class="nav-text">2.5.1 DNS提供的服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">5.2.</span> <span class="nav-text">2.5.2 工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-3-DNS%E8%AE%B0%E5%BD%95%E5%92%8C%E6%8A%A5%E6%96%87"><span class="nav-number">5.3.</span> <span class="nav-text">2.5.3 DNS记录和报文</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-P2P%E5%BA%94%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">2.6 P2P应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-1-P2P-%E6%96%87%E4%BB%B6%E5%88%86%E5%8F%91"><span class="nav-number">6.1.</span> <span class="nav-text">2.6.1 P2P 文件分发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-TCP%E5%A5%97%E6%8E%A5%E5%AD%97%E7%BC%96%E7%A8%8B"><span class="nav-number">7.</span> <span class="nav-text">2.7 TCP套接字编程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fkY"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">fkY</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fkYang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fkYang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fukai.yang@foxmail.com" title="E-Mail → mailto:fukai.yang@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fkY</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">158k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:24</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'y975d4MYQCK4R503CH0OprtL',
+      appKey     : 'p6FKpeXQK0zqjyjAprd58ShD',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

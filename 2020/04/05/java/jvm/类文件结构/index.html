@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.fkyang.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="类文件结构write once, run anywhere :代码编译的结果从本地机器码  转变为字节码，与操作系统和机器指令集无关，平台中立的格式作为程序编译后的结果 Java虚拟机，识别.class文件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM--类文件结构">
+<meta property="og:url" content="http://blog.fkyang.com/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="白苏的GitHub个人主页">
+<meta property="og:description" content="类文件结构write once, run anywhere :代码编译的结果从本地机器码  转变为字节码，与操作系统和机器指令集无关，平台中立的格式作为程序编译后的结果 Java虚拟机，识别.class文件。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-05T05:11:34.903Z">
+<meta property="article:author" content="fkY">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.fkyang.com/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JVM--类文件结构 | 白苏的GitHub个人主页</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白苏的GitHub个人主页</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">编程之路</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.fkyang.com/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM--类文件结构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-05 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-05T00:00:00+08:00">2020-04-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-05 13:11:34" itemprop="dateModified" datetime="2024-07-05T13:11:34+08:00">2024-07-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/05/java/jvm/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="类文件结构"><a href="#类文件结构" class="headerlink" title="类文件结构"></a>类文件结构</h1><p>write once, run anywhere :代码编译的结果从<em>本地机器码</em>  转变为<em>字节码</em>，与操作系统和机器指令集无关，平台中立的格式作为程序编译后的结果</p>
+<p>Java虚拟机，识别.class文件。</p>
+<span id="more"></span>
+
+<h2 id="Class类文件的结构"><a href="#Class类文件的结构" class="headerlink" title="Class类文件的结构"></a>Class类文件的结构</h2><p><strong>class文件</strong>：以<code>8个字节</code>为基础单位的<code>二进制流</code>。 每个字节都有其明确的含义，无分隔符。</p>
+<blockquote>
+<p>当数据需要多余八个字节的单位存储时（long，double），会按照高位在前分割成若干个八个字符存储。、</p>
+<p><code>class文件的结构</code>： </p>
+<ul>
+<li><p>无符号数：基本的数据类型，u1,u2,u4,u8来描述1，2，4，8个字节的无符号数</p>
+<ul>
+<li>通常用于描述数字，索引引用，数量值或按照utf-8编码的字符串值</li>
+</ul>
+</li>
+<li><p>表：多个无符号数或者其他的表作为数据项构成的<code>复合数据类型</code>。一整个class文件也可以看出一个表。</p>
+<ul>
+<li>命名，以_info结尾。</li>
+</ul>
+</li>
+</ul>
+<p>当需要描述同一类型，但是数量不定的多个数据的时候，会使用一个前置的容量计数器+若干个连续的数据项的形式。</p>
+</blockquote>
+<p><code>class类文件内容依次如下</code>：</p>
+<h3 id="1-魔数与Class文件的版本"><a href="#1-魔数与Class文件的版本" class="headerlink" title="1 魔数与Class文件的版本"></a>1 魔数与Class文件的版本</h3><pre><code>     CA FE BA BE 00 00 00 39
+</code></pre>
+<p>前<em><strong>八个字节</strong></em>(第一个基本单位)： 魔数(4个字节) + 版本号(四个字节)。</p>
+<ul>
+<li><p>魔数：class文件的前四个字节</p>
+<blockquote>
+<p>作用：身份识别—确定这个文件是否是一个能够被虚拟机接受的Class文件。</p>
+</blockquote>
+</li>
+<li><p>版本号：紧跟着魔数的四个字节。</p>
+<blockquote>
+<p>5,6个字节为次版本号(Minor Version)。第7，8个字节为主版本号(Major Version)。</p>
+<blockquote>
+<p>高版本的JDK能运行低版本的class文件，无法运行高版本的class文件。</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-常量池"><a href="#2-常量池" class="headerlink" title="2 常量池"></a>2 常量池</h3><pre><code>      00 28 
+</code></pre>
+<p>常量池：class文件的资源仓库，与其他项目关联最多的数据。</p>
+<p>常量池入口在主次版本之后,<strong>u2类型</strong>的数据，代表着常量池容量计数值。</p>
+<blockquote>
+<p>常量池数量不固定。</p>
+<blockquote>
+<p>常量池标号从1开始，例如：0x12，仅有17个元素，下标，1-17.</p>
+<p>常量池的标号0：用来表示不引用任何一个常量池的含义。</p>
+<blockquote>
+<p>其他集合类型都是从0开始的，比如接口索引，字段表等</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p><em><strong>存放内容</strong></em>：字面量 + 符号引用</p>
+<blockquote>
+<ul>
+<li><p>字面量：文本字符串，被声明final的常量值等。</p>
+</li>
+<li><p>符号引用：编译原理方面的概念，</p>
+<blockquote>
+<p>包，类和接口的全限类名，字段&#x2F;方法的名称与描述符，方法句柄和方法类型，动态调用点与动态常量</p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>池中每一个常量都是一个表，截止JDK13，常量表中共有17中不同类型的常量。</p>
+<blockquote>
+<p>常量 ：tag（表明常量类别）+   （+ 长度，若常量变长String）+  内容(通常是指向utf-8类型的常量池索引)。</p>
+</blockquote>
+<blockquote>
+<p>Class文件中的方法，字段等都是引用CONSTANT_Utf8_info型常量来描述名称，而CONSTANT_Utf8_info长度描述字符u2，最长65535，因此，方法&#x2F;类名最长64KB，否则无法编译。</p>
+</blockquote>
+<p>常量池中UTF8_info消息的<em><strong>I,V,<init> ,LineNumberTable，LocalVariableTable</strong></em>等常量。</p>
+<blockquote>
+<p>这些常量是编译器自动生成的，被后面的字段表(field_info),方法表(method_info),属性表(attribute_info)所引用，用来描述一些不方便用固定字节描述的内容，比如，方法的返回值，参数数量及类型的相关信息。</p>
+</blockquote>
+<h3 id="3-访问标识"><a href="#3-访问标识" class="headerlink" title="3 访问标识"></a>3 访问标识</h3><p>常量池结束之后，紧接着的<em><strong>两个字节</strong></em>是访问标识，用于识别类，接口的访问信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">普通的public ，java类，0x0021  = 0x0001（public）|0x0020（普通的类）</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-类-父类-接口索引集合"><a href="#4-类-父类-接口索引集合" class="headerlink" title="4 类&#x2F;父类&#x2F;接口索引集合"></a>4 类&#x2F;父类&#x2F;接口索引集合</h3><table>
+<thead>
+<tr>
+<th>name</th>
+<th>content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类&#x2F;父类索引</td>
+<td>u2类型，指向CONSTAN_Class_info的类描述符常量</td>
+</tr>
+<tr>
+<td>接口索引</td>
+<td>一组u2类型的数据</td>
+</tr>
+</tbody></table>
+<p>class通过这三个索引确定类的继承关系。</p>
+<p>接口索引集合：不定长数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">接口索引的第一项为u2类型的数据为接口计数器，表示索引表的容量，若无接口，则容量为0.  </span><br></pre></td></tr></table></figure>
+
+<h3 id="5-字段表集合"><a href="#5-字段表集合" class="headerlink" title="5 字段表集合"></a>5 字段表集合</h3><p>字段表集合field_info：用来描述接口或类声明的变量。</p>
+<blockquote>
+<p>包括类级变量，以及实例级变量，但不包括方法内部声明的局部变量。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>content</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单名称-name_index</td>
+<td>无类型和参数修饰的 方法&#x2F;字段名称</td>
+</tr>
+<tr>
+<td>描述符-descriptor_index</td>
+<td>描述字段的数据类型，方法的参数列表（数量，类型，顺序）+返回值</td>
+</tr>
+<tr>
+<td>全限定名-class_info中的name_index</td>
+<td>把类全名中的.换成&#x2F;，例如：java&#x2F;long&#x2F;Object</td>
+</tr>
+</tbody></table>
+<p>描述符描述变量：</p>
+<pre><code>*	[[I:int 的二维数组
+*	[[Ljava/lang/String:java.lang.String[ ][\   (L: 表示返回值是对象类型)
+</code></pre>
+<p>描述方法：先参数列表，后返回值的顺序，参数放在（）中</p>
+<pre><code>*	()V :void name()
+*	([CII[C)I : int name(char [] , int ,int ,char[] )
+</code></pre>
+<p>字段表集合中不会列出从父类&#x2F;接口中继承的字段，对于Class文件，只要描述符不完全相同，字段就是合法的-即使字段重名，且参数一样，只有返回值不一样。</p>
+<blockquote>
+<p>可能出现代码中不存在的字段，例如：在内部类中为了保持堆外部类的访问性，编译器自动添加指向外部类实例的字段</p>
+</blockquote>
+<h3 id="6-方法表集合"><a href="#6-方法表集合" class="headerlink" title="6 方法表集合"></a>6 方法表集合</h3><p>对方法的存储，与方法表几乎一样，只有访问标识与属性表集合中的可选项有区别。</p>
+<pre><code>* 访问标识access_flags:少了volatile 与 transitent,多了synchronized,native,stricftp,abstract关键字
+* 属性表集合attribute_info:
+</code></pre>
+<p>方法中的代码,经javac编译成字节码指令后,存放在<em><strong>方法属性表集合</strong></em>中一个名为Code的属性里面</p>
+<h3 id="7-属性表集合"><a href="#7-属性表集合" class="headerlink" title="7 属性表集合"></a>7 属性表集合</h3><p>不要求属性表之间具有严格的顺序,只要属性名不重复.虚拟机在运行时,会忽略不认识的属性.</p>
+<h4 id="code-属性-方法的代码存储区域"><a href="#code-属性-方法的代码存储区域" class="headerlink" title="code 属性:方法的代码存储区域"></a>code 属性:方法的代码存储区域</h4>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/05/code/leecode/eggs877/" rel="prev" title="leecode - 877鸡蛋掉落问题">
+      <i class="fa fa-chevron-left"></i> leecode - 877鸡蛋掉落问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/05/java/jvm/GC/" rel="next" title="JVM--垃圾回收">
+      JVM--垃圾回收 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">类文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Class%E7%B1%BB%E6%96%87%E4%BB%B6%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">Class类文件的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%AD%94%E6%95%B0%E4%B8%8EClass%E6%96%87%E4%BB%B6%E7%9A%84%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.1.</span> <span class="nav-text">1 魔数与Class文件的版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">1.1.2.</span> <span class="nav-text">2 常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%AE%BF%E9%97%AE%E6%A0%87%E8%AF%86"><span class="nav-number">1.1.3.</span> <span class="nav-text">3 访问标识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%B1%BB-%E7%88%B6%E7%B1%BB-%E6%8E%A5%E5%8F%A3%E7%B4%A2%E5%BC%95%E9%9B%86%E5%90%88"><span class="nav-number">1.1.4.</span> <span class="nav-text">4 类&#x2F;父类&#x2F;接口索引集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AD%97%E6%AE%B5%E8%A1%A8%E9%9B%86%E5%90%88"><span class="nav-number">1.1.5.</span> <span class="nav-text">5 字段表集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%96%B9%E6%B3%95%E8%A1%A8%E9%9B%86%E5%90%88"><span class="nav-number">1.1.6.</span> <span class="nav-text">6 方法表集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%B1%9E%E6%80%A7%E8%A1%A8%E9%9B%86%E5%90%88"><span class="nav-number">1.1.7.</span> <span class="nav-text">7 属性表集合</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#code-%E5%B1%9E%E6%80%A7-%E6%96%B9%E6%B3%95%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AD%98%E5%82%A8%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.1.7.1.</span> <span class="nav-text">code 属性:方法的代码存储区域</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fkY"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">fkY</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fkYang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fkYang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fukai.yang@foxmail.com" title="E-Mail → mailto:fukai.yang@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fkY</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">158k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:24</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'y975d4MYQCK4R503CH0OprtL',
+      appKey     : 'p6FKpeXQK0zqjyjAprd58ShD',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

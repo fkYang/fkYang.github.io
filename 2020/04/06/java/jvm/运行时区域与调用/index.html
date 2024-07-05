@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.fkyang.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM--字节码执行引擎">
+<meta property="og:url" content="http://blog.fkyang.com/2020/04/06/java/jvm/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8C%BA%E5%9F%9F%E4%B8%8E%E8%B0%83%E7%94%A8/index.html">
+<meta property="og:site_name" content="白苏的GitHub个人主页">
+<meta property="og:description" content="虚拟机字节码执行引擎物理机的执行引擎：建立在操作系统的层面上的 虚拟机的执行引擎：软件自行实现的  不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件直接支持的指令集格式">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-07-05T05:11:38.198Z">
+<meta property="article:author" content="fkY">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://blog.fkyang.com/2020/04/06/java/jvm/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8C%BA%E5%9F%9F%E4%B8%8E%E8%B0%83%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JVM--字节码执行引擎 | 白苏的GitHub个人主页</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">白苏的GitHub个人主页</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">编程之路</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://blog.fkyang.com/2020/04/06/java/jvm/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8C%BA%E5%9F%9F%E4%B8%8E%E8%B0%83%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="fkY">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="白苏的GitHub个人主页">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM--字节码执行引擎
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-06 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-06T00:00:00+08:00">2020-04-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-05 13:11:38" itemprop="dateModified" datetime="2024-07-05T13:11:38+08:00">2024-07-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/06/java/jvm/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8C%BA%E5%9F%9F%E4%B8%8E%E8%B0%83%E7%94%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/06/java/jvm/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8C%BA%E5%9F%9F%E4%B8%8E%E8%B0%83%E7%94%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="虚拟机字节码执行引擎"><a href="#虚拟机字节码执行引擎" class="headerlink" title="虚拟机字节码执行引擎"></a>虚拟机字节码执行引擎</h1><p>物理机的执行引擎：建立在操作系统的层面上的</p>
+<p>虚拟机的执行引擎：软件自行实现的</p>
+<blockquote>
+<p>不受物理条件制约的定制指令集与执行引擎的结构体系，执行不被硬件<strong>直接</strong>支持的指令集格式</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="栈帧区域"><a href="#栈帧区域" class="headerlink" title="栈帧区域"></a>栈帧区域</h2><p>栈帧(Stack Frame)：用于支持虚拟机进行<strong>方法调用与方法执行</strong>的数据结构。运行时数据区<code>虚拟机栈</code>的栈元素。</p>
+<p>栈帧内容：方法的局部变量表，操作数栈，动态链接，方法返回地址等信息。</p>
+<blockquote>
+<p>栈帧的大小（局部变量表，操作数栈等的大小）存储在方法表的Code属性当中，编译成class文件后就固定了。</p>
+</blockquote>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>局部变量表Local Variables Table:变量值的存储空间，用于存放<strong>方法参数</strong>与方法内部定义的<strong>局部变量</strong>。</p>
+<blockquote>
+<p>Class文件中Code属性的<em>max_local</em>数据项就确定了该方法需要的局部变量表的<strong>最大值</strong>。</p>
+</blockquote>
+<p><em>存储单位</em>：变量槽Variable Slot</p>
+<blockquote>
+<p> 虚拟机规范未强制此项大小，一个变量槽的长度可以根据具体的事先有不同的长度。</p>
+</blockquote>
+<p><em>引用方式</em>：索引定位，从0开始，若某个变量占据两个槽，无法仅访问其中的一个。</p>
+<p>变量槽可重用：变量的作用域造成的。</p>
+<blockquote>
+<p>tips：在引用变量x出作用域，slot槽还未被其他的变量使用的时候，slot槽还存有x的引用，gc roots仍能找到其引用，x指向的对象不会被回收（即使这个x变量已经无用，可以被回收），最好在变量出作用域前，赋初值（<em><strong>主要是reference类型的变量</strong></em>。</p>
+<p>但由于概念模型与实际虚拟机的差别（比如:即时编译优化），可能并不会出现上面这种区别。</p>
+</blockquote>
+<h3 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h3><p>操作数栈Operand Stack: 操作栈，后入先出的 栈。</p>
+<blockquote>
+<p>操作数栈的最大深度也是在编译的时候被写入到Code属性的max_stacks中。</p>
+</blockquote>
+<p>栈的内容：任意类型的java数据类型。32位的数据占据栈容量1；64位的容量为2.</p>
+<p>程序运行开始，操作数栈为空，根据字节码指令进行相应的入栈出栈操作。</p>
+<blockquote>
+<p>操作数栈的数据类型与字节码指令的序列严格匹配，</p>
+<ul>
+<li>编译器保证</li>
+<li>类校验阶段验证(验证中的字节码验证)</li>
+</ul>
+</blockquote>
+<p>栈帧之间可能有数据共享。</p>
+<h3 id="动态连接"><a href="#动态连接" class="headerlink" title="动态连接"></a>动态连接</h3><p>在运行时间，将字节码的方法调用指令的符号引用 转化为直接引用。</p>
+<blockquote>
+<ul>
+<li><p>静态解析：类加载阶段，符号引用—&gt;直接引用</p>
+</li>
+<li><p>动态连接：每一次运行期间转化为直接引用</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h3><p>方法开始执行后，退出方法的两个途径</p>
+<ol>
+<li>正常调用完成：遇到了返回的字节码指令，返回到上层调用</li>
+<li>异常调用完成：遇上了妥善处理的异常，不会返回给上层任何返回值的。</li>
+</ol>
+<h3 id="附加信息"><a href="#附加信息" class="headerlink" title="附加信息"></a>附加信息</h3><p>一般把动态连接，方法返回地址，附加信息统称一类栈帧 信息</p>
+<h2 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h2><p>方法调用：确定被调用的方法的版本（确定是哪一个方法）</p>
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><ul>
+<li>类加载的<strong>解析</strong>：符号引用–&gt;直接引用 ； 此方法调用在运行期间不可改变</li>
+</ul>
+<blockquote>
+<p>编译期可知，运行期不可变： 静态方法（与类型直接相连），私有方法（外部不可访问）。</p>
+<p>这两类方法不可通过<strong>继承或其他方式</strong> <em>重写</em>其他版本，能够在类加载阶段进行解析</p>
+<ul>
+<li>非虚方法：静态，私有，实例构造器，父类方法+ final修饰的方法</li>
+<li>虚方法：其他方法。</li>
+</ul>
+</blockquote>
+<p>方法调用的字节码指令：invoke </p>
+<blockquote>
+<ul>
+<li>static: 静态方法</li>
+<li>special: 实例构造器<init> ，私有，父类中的方法。</li>
+<li>virtual</li>
+<li>interface:</li>
+<li>dynamic:</li>
+</ul>
+</blockquote>
+<p>static与special调用的方法，在类加载阶段可以唯一确定调用的版本</p>
+<h3 id="分派Dispatch，重写，重载"><a href="#分派Dispatch，重写，重载" class="headerlink" title="分派Dispatch，重写，重载"></a>分派Dispatch，重写，重载</h3><p>方法签名：方法名+参数类型（不包括返回值）</p>
+<ol>
+<li>重写：根据方法的参数选择，静态<ol>
+<li>重写发生在运行期，是子类对父类的允许访问的方法的实现过程进行重新编写。</li>
+<li>返回值类型、方法名、参数列表必须相同，抛出的异常范围小于等于父类，访问修饰符范围大于等于父类。</li>
+<li>如果父类方法访问修饰符为 private&#x2F;final&#x2F;static 则子类就不能重写该方法，但是被 static 修饰的方法能够被再次声明。</li>
+<li>构造方法无法被重写</li>
+<li><strong>重写就是子类对父类方法的重新改造，外部样子不能改变，内部逻辑可以改变</strong></li>
+</ol>
+</li>
+<li>重载：根据方法的调用者选择，动态<ol>
+<li>发生在同一个类中，方法名必须相同，参数类型不同、个数不同、顺序不同，方法返回值和访问修饰符可以不同。</li>
+<li><strong>重载就是同一个类中多个同名方法根据不同的传参来执行不同的逻辑处理。</strong></li>
+</ol>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>区别点</th>
+<th>重载方法</th>
+<th>重写方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>发生范围</td>
+<td>同一个类</td>
+<td>子类 中</td>
+</tr>
+<tr>
+<td>参数列表</td>
+<td>必须修改</td>
+<td>一定不能修改</td>
+</tr>
+<tr>
+<td>返回类型</td>
+<td>可修改</td>
+<td>一定不能修改</td>
+</tr>
+<tr>
+<td>异常</td>
+<td>可修改</td>
+<td>可以减少或删除，一定不能抛出新的或者更广的异常</td>
+</tr>
+<tr>
+<td>访问修饰符</td>
+<td>可修改</td>
+<td>一定不能做更严格的限制（可以降低限制）</td>
+</tr>
+<tr>
+<td>发生阶段</td>
+<td>编译期</td>
+<td>运行期</td>
+</tr>
+</tbody></table>
+<ul>
+<li>静态分派： 依据&#x3D;&#x3D;静态类型&#x3D;&#x3D;决定方法执行版本的分派动作。<em>编译阶段</em></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Human</span> <span class="variable">man</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Man</span>();</span><br><span class="line">Human 为静态类型，编译期可知；Man为实际类型，运行期可知</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">say</span><span class="params">(Human t)</span>&#123;&#125;;<span class="comment">//</span></span><br><span class="line"> 	<span class="keyword">void</span> <span class="title function_">say</span><span class="params">( Man t)</span>&#123;&#125;;</span><br><span class="line"><span class="comment">//重写，根据静态类型确定方法执行那个版本</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>***重载(典型的静态分派)***：虚拟机&#x2F;编译器根据传入变量的静态类型进行作为判断依据。</p>
+<p>重载：确定的是相对最合适的，不是唯一的</p>
+<p>按照与参数的关系进行匹配，优先级从高到低，与参数的继承（+实现的接口）的关系一致（从底层向父类找）</p>
+</blockquote>
+<ul>
+<li>动态分派：<em>运行期</em>根据&#x3D;&#x3D;实际类型&#x3D;&#x3D;确定方法执行版本的分派过程</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Human&#123;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">say</span><span class="params">(Object t)</span>;</span><br><span class="line">&#125;</span><br><span class="line">Man <span class="keyword">extends</span> <span class="title class_">Human</span>&#123;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">say</span><span class="params">(Object t)</span>;<span class="comment">//重载，根据调用方法的对象，选择哪个方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><em><strong>重写</strong></em>：根据<em><strong>方法接收者的</strong></em>实际类型选择方法版本</p>
+<p>invokevirtual:</p>
+<ol>
+<li>先找操作数栈顶指向对象的<em><strong>实际类型</strong></em>C</li>
+<li>在类型C找到相对应的方法，若有访问权限，返回方法的直接引用，否则，java.lang&#x2F;IllegalAccessError异常</li>
+<li>类型C中找不到，按照继承关系从下往上依次对父类进行搜索与验证</li>
+<li>仍然找不到，java.lang.AbstratMethodError异常</li>
+</ol>
+</blockquote>
+<ul>
+<li>单分派与多分派</li>
+</ul>
+<p>方法的<strong>宗量</strong>：方法的接收者与方法的参数。</p>
+<blockquote>
+<ul>
+<li>单分派：根据一个总量对目标方法进行选择</li>
+<li>多分派：根据多于一个总量对目标方法进行选择</li>
+</ul>
+<p>静态多分派：静态类型+方法参数</p>
+<p>动态单分派：方法参数类型已经确定，方法的接收者尚未确定</p>
+</blockquote>
+<ul>
+<li>虚拟机动态分派的实现</li>
+</ul>
+<p>动态分派，运行时搜索类型的方法元数据来找到合适的目标，反复搜索类型元数据—耗时</p>
+<p><em><strong>虚方法表</strong></em>：在类型的方法表中建立，使用虚方法表索引代替元数据查找以提高性能。</p>
+<blockquote>
+<p>虚方法表中存储各个方法的<strong>实际入口地址</strong>（方法对应的字节码，存储在各个类的方法区中），</p>
+<p>虚方法表一般在类加载的连接–准备后，在准备的类的变量初始值后，初始化虚方法表。</p>
+</blockquote>
+<h2 id="动态类型语言支持"><a href="#动态类型语言支持" class="headerlink" title="动态类型语言支持"></a>动态类型语言支持</h2><p>动态类型语言：类型检查的主体过程是在运行期而不是编译期；变量无类型，变量值有类型</p>
+<blockquote>
+<p>运行时确定方法的接收者</p>
+</blockquote>
+<h3 id="invoke包"><a href="#invoke包" class="headerlink" title="invoke包"></a>invoke包</h3><blockquote>
+<p>invoke包：提供方法句柄来动态确定目标方法的机制。</p>
+<p>把查找目标代码的决定权从虚拟机迁移到具体的用户代码中。</p>
+</blockquote>
+<ul>
+<li><p>Reflection：模拟java代码层次的调用，重量级，信息全</p>
+</li>
+<li><p>MethodHandle：模拟字节码层次的调用。轻量级，仅仅包含执行该方法的相关信息。</p>
+</li>
+</ul>
+<h3 id="invokedynamic指令"><a href="#invokedynamic指令" class="headerlink" title="invokedynamic指令"></a>invokedynamic指令</h3><h2 id="基于栈的字节码解释执行引擎"><a href="#基于栈的字节码解释执行引擎" class="headerlink" title="基于栈的字节码解释执行引擎"></a>基于栈的字节码解释执行引擎</h2><p>java程序的编译：半独立</p>
+<blockquote>
+<p>javac编译器：生成线性字节码指令流（基于栈的指令集架构）</p>
+<p>解释器：虚拟机内部</p>
+</blockquote>
+<ul>
+<li>栈架构：速度慢(<em><strong>解释执行的情况下</strong></em>)<ul>
+<li>由于指令数量与内存访问的原因</li>
+</ul>
+</li>
+</ul>
+<p>即时编译器形成的物理机的汇编指令流：虚拟机采取的指令架构与运行速度无关系。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/05/java/jvm/ClassLoader/" rel="prev" title="JVM--类加载机制">
+      <i class="fa fa-chevron-left"></i> JVM--类加载机制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/06/dailyFun/hexonext%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" rel="next" title="hexo的博客搭建记录">
+      hexo的博客搭建记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AD%97%E8%8A%82%E7%A0%81%E6%89%A7%E8%A1%8C%E5%BC%95%E6%93%8E"><span class="nav-number">1.</span> <span class="nav-text">虚拟机字节码执行引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.1.</span> <span class="nav-text">栈帧区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E8%A1%A8"><span class="nav-number">1.1.1.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E6%95%B0%E6%A0%88"><span class="nav-number">1.1.2.</span> <span class="nav-text">操作数栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.1.3.</span> <span class="nav-text">动态连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9E%E5%9C%B0%E5%9D%80"><span class="nav-number">1.1.4.</span> <span class="nav-text">方法返回地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%8A%A0%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.5.</span> <span class="nav-text">附加信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">方法调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90"><span class="nav-number">1.2.1.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%B4%BEDispatch%EF%BC%8C%E9%87%8D%E5%86%99%EF%BC%8C%E9%87%8D%E8%BD%BD"><span class="nav-number">1.2.2.</span> <span class="nav-text">分派Dispatch，重写，重载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%B1%BB%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="nav-number">1.3.</span> <span class="nav-text">动态类型语言支持</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke%E5%8C%85"><span class="nav-number">1.3.1.</span> <span class="nav-text">invoke包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invokedynamic%E6%8C%87%E4%BB%A4"><span class="nav-number">1.3.2.</span> <span class="nav-text">invokedynamic指令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%A0%88%E7%9A%84%E5%AD%97%E8%8A%82%E7%A0%81%E8%A7%A3%E9%87%8A%E6%89%A7%E8%A1%8C%E5%BC%95%E6%93%8E"><span class="nav-number">1.4.</span> <span class="nav-text">基于栈的字节码解释执行引擎</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fkY"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">fkY</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fkYang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fkYang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fukai.yang@foxmail.com" title="E-Mail → mailto:fukai.yang@foxmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">fkY</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">158k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:24</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'y975d4MYQCK4R503CH0OprtL',
+      appKey     : 'p6FKpeXQK0zqjyjAprd58ShD',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
